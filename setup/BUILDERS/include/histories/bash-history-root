@@ -1,0 +1,23 @@
+id
+export PS1='\$ '
+echo Some days it's filet mignon and other days it's hamburger helper
+ps -ef | grep ssh-agent
+lsof -U -a -c sshd
+export SSH_AUTH_SOCK=/tmp/ssh-pdeFn6JYci/agent.42670
+ssh-add -l
+awk '{print $1}' ~hal/.ssh/known_hosts 
+ssh hal@192.168.46.158
+ssh -A hal@192.168.46.158
+echo I get by with a little help from my friends
+history
+export HISTSIZE=0
+history
+export HISTFILE=/dev/null
+shred -u /root/.bash_history
+echo I am only here because I had a lot of help along the way
+cd /root
+df -h .
+dd if=/dev/urandom of=junk bs=1M; rm -f junk
+time dd if=/dev/urandom of=junk bs=1M; rm -f junk
+bg
+systemctl status sshd

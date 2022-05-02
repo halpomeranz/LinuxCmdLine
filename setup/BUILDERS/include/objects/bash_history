@@ -1,0 +1,348 @@
+#1651240518
+cd /mnt/d/hrpom/Documents/Courses/Linux\ Cmd\ Line/Exercises/BUILDERS/
+#1651240522
+mkdir include
+#1651240530
+emacs include/phrase_that_pays
+#1651240614
+cd ..
+#1651240627
+chmod +x BUILDERS/01-05-phrase_that_pays.sh 
+#1651240641
+BUILDERS/01-05-phrase_that_pays.sh 
+#1651241235
+find Targets/
+#1651241327
+BUILDERS/01-05-phrase_that_pays.sh 
+#1651241330
+find Targets/
+#1651241472
+BUILDERS/01-05-phrase_that_pays.sh 
+#1651241476
+find Targets/
+#1651241528
+BUILDERS/01-05-phrase_that_pays.sh 
+#1651241538
+cat BUILDERS/include/phrase_that_pays 
+#1651241581
+find Targets/
+#1651241869
+ls Targets/PtP/We/the/people/in/order/to/form/a/more/perfect/union/is/the/beginning/of/the/preamble/of/the/United/States/Constitution
+#1651241876
+ls -a Targets/PtP/We/the/people/in/order/to/form/a/more/perfect/union/is/the/beginning/of/the/preamble/of/the/United/States/Constitution
+#1651241909
+emacs BUILDERS/include/phrase_that_pays
+#1651241929
+BUILDERS/01-05-phrase_that_pays.sh 
+#1651241939
+find Targets/
+#1651242037
+BUILDERS/01-05-phrase_that_pays.sh 
+#1651245189
+export PS1='SAGER\$ '
+#1651245191
+pwd
+#1651245192
+ls
+#1651245197
+cd BUILDERS/
+#1651245203
+mkdir include/images
+#1651245488
+file include/images/*
+#1651246619
+emacs include/images/text.txt
+#1651246931
+chmod +x 02-03-PictureDir.sh
+#1651246932
+cd ..
+#1651246933
+ls
+#1651246945
+BUILDERS/02-03-PictureDir.sh
+#1651247040
+ls Targets/Pictures/
+#1651247062
+BUILDERS/02-03-PictureDir.sh
+#1651247792
+pwd
+#1651247796
+ls Targets/Pictures/
+#1651247808
+ls Targets/Pictures/ | cut -d. -f2 | sort | uniq -c
+#1651247877
+BUILDERS/02-03-PictureDir.sh
+#1651247886
+ls Targets/Pictures/ | cut -d. -f2 | sort | uniq -c
+#1651247912
+file Targets/Pictures/*
+#1651248068
+for file in Targets/Pictures/*; do ext=$(echo $file | cut -d. -f2 | tr a-z A-Z); [[ $ext == 'JPG' ]] && ext='JPEG'; ftype=$(file $file | head -1 | awk '{print $1'}); [[ $ext != $ftype ]] && echo $file: $ftype; done
+#1651248264
+man file
+#1651248293
+file -b Targets/Pictures/728.png
+#1651248304
+for file in Targets/Pictures/*; do ext=$(echo $file | cut -d. -f2 | tr a-z A-Z); [[ $ext == 'JPG' ]] && ext='JPEG'; ftype=$(file -b $file | head -1 | awk '{print $1'}); [[ $ext != $ftype ]] && echo $file: $ftype; done
+#1651248631
+BUILDERS/02-03-PictureDir.sh
+#1651248719
+for file in {000..999}; do [[ ! -f Targets/Pictures/$file.* ]] && echo $file; done
+#1651248734
+ls Targets/Pictures/
+#1651248747
+ls Targets/Pictures/ | wc -l
+#1651249499
+ls /boot
+#1651249506
+ls /
+#1651249724
+ls -l /etc/passwd
+#1651249759
+ls -lShA /var/log
+#1651273257
+pwd
+#1651273265
+cd BUILDERS/include/
+#1651273265
+ls
+#1651273282
+mkdir histories
+#1651273284
+cd histories
+#1651273293
+pwd
+#1651273323
+cp /mnt/d/hrpom/Documents/Old\ PCs/jordan/Documents/cldojo/2019-Feb/bash-history-* .
+#1651273325
+ls
+#1651273328
+wc -l *
+#1651273338
+cat bash-history-hal 
+#1651273378
+cat bash-history-root 
+#1651273527
+mv bash-history-hal bash-history-lab
+#1651273531
+vi bash-history-lab
+#1651273783
+vi bash-history-root
+#1651274349
+emacs insert-history
+#1651275295
+chmod +x insert-history 
+#1651275302
+cat insert-history 
+#1651275315
+pwd
+#1651275337
+echo $HOME
+#1651275344
+sudo ls /root
+#1651275357
+sudo ls -A /root
+#1651275402
+./insert-history ./bash-history-lab /home/hal/.bash_history 
+#1651275509
+emacs insert-history 
+#1651275534
+./insert-history ./bash-history-lab /home/hal/.bash_history 
+#1651275635
+emacs insert-history 
+#1651275648
+./insert-history ./bash-history-lab /home/hal/.bash_history 
+#1651275857
+emacs insert-history
+#1651275900
+rm /home/hal/.bash_history.bak 
+#1651275906
+./insert-history ./bash-history-lab /home/hal/.bash_history 
+#1651275918
+wc -l /home/hal/.bash_history*
+#1651276099
+pwd
+#1651276165
+cd ../..
+#1651276166
+ls
+#1651276179
+mv 02-04-History.sh 02-05-History.sh
+#1651276182
+emacs 02-05-History.sh
+#1651276882
+grep help include/histories/bash-history-*
+#1651278786
+ls
+#1651278806
+mkdir objects
+#1651278850
+for i in {1..100}; do echo this is line $i; done >objects/numbered_lines
+#1651278867
+head -50 objects/numbered_lines | tail -1
+#1651322859
+. ~/.bashrc
+#1651322864
+export PS1='SAGER\$ '
+#1651322877
+less objects/access-log-hudak 
+#1651323028
+less objects/error-log-hudak
+#1651323214
+for i in {1..10}; do for j in {1..$i}; do echo -ne $(($i*$j))\\t; done; echo; done;
+#1651323246
+for i in {1..10}; do for j in {1..10}; do echo -ne $(($i*$j))\\t; done; echo; done;
+#1651323304
+for i in {1..12}; do for j in {1..12}; do echo -ne $(($i*$j))\\t; done; echo; done;
+#1651324114
+ls objects/
+#1651324125
+unalias ls
+#1651324128
+cd objects/
+#1651324162
+mv access-log-champlain access_log-champlain 
+#1651324173
+mv access-log-hudak access_log-hudak 
+#1651324181
+mv error-log-hudak error_log-hudak 
+#1651324183
+ls
+#1651324305
+cat access_log-champlain | while read line; do len=$(echo $line | wc -c); echo -ne $len\\t$line; done
+#1651324313
+cat access_log-champlain | while read line; do len=$(echo $line | wc -c); echo -e $len\\t$line; done
+#1651324367
+cat access_log-champlain | while read line; do len=$(echo $line | wc -c); echo -e "$len\\t$line"; done
+#1651324382
+cat access_log-champlain | while read line; do len=$(echo $line | wc -c); echo -e "$len\\t$line"; done | grep OPTIONS
+#1651324402
+cat access_log-champlain | while read line; do len=$(echo $line | wc -c); echo -e "$len\\t$line"; done | sort -n
+#1651325633
+history
+#1651276620
+cd /mnt/d/hrpom/Documents/Courses/Linux\ Cmd\ Line/Exercises/BUILDERS/
+#1651276629
+export PS1='SAGER\ $'
+#1651276638
+export PS1='SAGER\$ '
+#1651276646
+chmod +x 02-05-History.sh
+#1651276651
+./02-05-History.sh
+#1651276668
+sudo -s
+#1651277380
+pwd
+#1651277391
+ls
+#1651277393
+cd ..
+#1651277394
+ls
+#1651277398
+unalias ls
+#1651277399
+ls
+#1651277407
+ls Targets/Pictures/
+#1651277418
+ls -l Targets/Pictures/ | less
+#1651277448
+ls -l BUILDERS/include/images/
+#1651277458
+chmod 644 BUILDERS/include/images//*
+#1651277460
+ls -l BUILDERS/include/images/
+#1651277826
+ls Targets/Pictures/ | wc -l
+#1651277889
+ls Targets/Pictures/ | cut -d. -f2 | sort | uniq -c
+#1651277979
+cd Targets/Pictures/
+#1651277999
+mkdir -p ~/Pictures/GIF
+#1651278006
+mkdir -p ~/Pictures/JPG
+#1651278012
+mkdir -p ~/Pictures/PNG
+#1651278022
+cp *.gif ~/Pictures/GIF
+#1651278034
+cp *.png ~/Pictures/PNG
+#1651278056
+cp *.jpg *.jpeg ~/Pictures/JPG
+#1651278098
+ls ~/Pictures/GIF | wc -l
+#1651278107
+ls ~/Pictures/JPG | wc -l
+#1651278112
+ls ~/Pictures/PNG | wc -l
+#1651279311
+ps -ef | awk '{print $1}' | sort | uniq -c
+#1651279318
+ps -ef
+#1651280185
+echo $(( $RANDOM % 255 )).$(( $RANDOM % 255 )).$(( $RANDOM % 255 )).$(( $RANDOM % 255 ))
+#1651280232
+pwd
+#1651280236
+cd ../..
+#1651280236
+ls
+#1651280267
+for i in {1..1000}; do echo $(( $RANDOM % 255 )).$(( $RANDOM % 255 )).$(( $RANDOM % 255 )).$(( $RANDOM % 255 )); done >BUILDERS/objects/ip_addrs
+#1651280273
+less BUILDERS/objects/ip_addrs
+#1651280302
+sort -n -t. -k1,1 -k2,2 -k3,3 -k4,4 BUILDERS/objects/ip_addrs | less
+#1651280353
+sort -V BUILDERS/objects/ip_addrs | less
+#1651280482
+sort -n BUILDERS/objects/ip_addrs | less
+#1651281443
+ls
+#1651281454
+md5sum Targets/Pictures/
+#1651281457
+md5sum Targets/Pictures/*
+#1651281477
+md5sum Targets/Pictures/* | sort -u -k1,1
+#1651281908
+md5sum Targets/Pictures/* | awk '{print $1}' | sort -u
+#1651318262
+grep -rl PATH_MAX /usr/include
+#1651318285
+grep -rl SIGABRT /usr/include
+#1651318830
+pwd
+#1651318841
+grep -rl sockaddr_in /usr/include
+#1651318844
+ls
+#1651318865
+sort -u -k2 BUILDERS/objects/psscan-output 
+#1651318872
+sort -u -k2 BUILDERS/objects/psscan-output | wc -l
+#1651318878
+sort -u -k2, BUILDERS/objects/psscan-output | wc -l
+#1651318886
+sort -u -k2,12 BUILDERS/objects/psscan-output | wc -l
+#1651318934
+wc -l BUILDERS/objects/psscan-output
+#1651321884
+vi ~/.bashrc 
+#1651321978
+. ~/.bashrc
+#1651321989
+export PS1='SAGER\$ '
+#1651321992
+history
+#1651322023
+vi ~/.bashrc 
+#1651322039
+. ~/.bashrc
+#1651322043
+export PS1='SAGER\$ '
+#1651322046
+history

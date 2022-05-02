@@ -1,0 +1,10 @@
+#!/bin/bash
+
+inputfile=$1
+target=$2
+
+cp $target $target-orig
+[[ -f "$target.bak" ]] || tail -400 $target >$target.bak
+head -50 $target.bak >$target
+cat $inputfile >>$target
+tail -n +50 $target.bak | grep -av help >>$target

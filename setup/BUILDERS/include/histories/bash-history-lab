@@ -1,0 +1,33 @@
+grep plugins access_log 
+awk '/plugins/ {print $1}' access_log 
+awk '/plugins/ {print $1}' access_log | sort | uniq -c | sort -n
+ps -ef | awk '{print $1}' | sort | uniq -c | sort -n
+echo Look for the helpers. You will always find people helping.
+grep plugins access_log 
+grep plugins access_log | sed 's/- -.*" "//'
+grep plugins access_log | sed 's/- -.*" "//; s/"$//'
+grep plugins access_log | sed 's/- -.*" "//; s/"$//' | sort | uniq -c | sort -n
+grep plugins access_log | sed 's/- -.*" "//; s/"$//' | sort | uniq -c
+grep 45.91.25.36 access_log | less
+awk -F: '{print $1, $3}' /etc/passwd | head
+export PS1='GOOD> '
+export PS1='EVIL> "
+export PS1='EVIL> '
+echo Helping helps the helper and the helpee
+date
+ls -l /etc/resolv.conf 
+export TZ=UTC
+date
+ls -l /etc/resolv.conf 
+ls /usr/share/zoneinfo/
+ls /usr/share/zoneinfo/Europe/
+export TZ=Europe/Athens
+date
+unset TZ
+date
+echo help! i need somebody!
+echo $SSH_AUTH_SOCK
+/bin/su
+echo this command is logged
+ echo this command is not
+history
