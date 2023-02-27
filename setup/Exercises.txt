@@ -105,6 +105,10 @@
     from the second field onwards, ignoring the memory offset information in column one? (HINT: look at the
     answer to question #5)
 
+12. "Targets/names" contains data on the top 100 most popular male and female names based on data
+    from the United States Social Security Administration for the years 1920-2021. Extract the two names
+    from each line of data and output an alphabetically sorted file with one name per line.
+
 
 "Redirect This!"
 (Lab for Section 4, "Output Redirection")
@@ -142,9 +146,8 @@
 3. Now output only the 10 longest lines from the file. Bonus points if you can identify the exploit
    that was launched.
 
-4. "Targets/names" contains data on the top 100 most popular male and female names based on data
-   from the United States Social Security Administration for the years 1920-2021. Extract the two names
-   from each line of data and output an alphabetically sorted file with one name per line.
+4. Earlier we used "awk" to extract a list of names from Targets/names. Can you write a shell loop
+   to do the same thing?
 
 5. Output a multiplication table for the numbers 1-12 like the one shown below:
 
@@ -161,6 +164,9 @@
 11      22      33      44      55      66      77      88      99      110     121     132
 12      24      36      48      60      72      84      96      108     120     132     144
 
+6. Targets/logs contains a large number of files named "<something>.YYYYMMDD". Move all of these
+   files into a new directory structure broken out by year and day like "newdir/YYYY/MM/<something>.YYYYMMDD".
+   (HINT: Don't overthink this one or try to be too clever.)
 
 
 "Choose Your Own Adventure"
@@ -184,7 +190,6 @@
    bad actor messed up and used the attachment name as the subject line of the message.
    
 
-
 "Find All the Things"
 (Lab for Section 7, "Other Iterators")
 ======================================
@@ -199,12 +204,15 @@
 3. You have intel that attackers are deploying a script with MD5 checksum 9b114325e783b3b25f1918ca7b813bd4
    Search /tmp, /var/tmp, and /dev/shm for any files that match this checksum.
 
-4. Previously we used "ls -lASh /var/log" to find the largest files in the /var/log directory itself.
+4. List all subdirectories of the current directory only. DO NOT show subdirectories of subdirectories.
+   (HINT: Is there a way to make "find" not look in subdirectories?)
+
+5. Previously we used "ls -lASh /var/log" to find the largest files in the /var/log directory itself.
    But what about files in the subdirectories? Create a list of the 20 largest files anywhere under
    /var/log. (HINT: "wc -c" will tell you the number of bytes in a file-- maybe there's a way to combine
    that with "find"? Also you are probably going to want to be root when you run this command.)
 
-5. We're starting a new project and we want to copy the directory structure of our current project to the
+6. We're starting a new project and we want to copy the directory structure of our current project to the
    new project. Here's the tricky part-- we just want to copy the directory layout but we don't want to copy
    any of the files from the existing project. How could we do this? For practice just copy the directory
    structure under /dev (without the /dev part) to /tmp/newdev.
@@ -272,8 +280,7 @@
 	10.16.254.17 mydomain.com
 
 5. Ping all the hosts on your local network and report on the ones that are alive. (HINT: "ping" has multi-line
-   output that is a pain to parse-- "tr" might be useful to convert the output to a single line. Also check the
-   "ping" manual page for ways to speed things up.)
+   output that is a pain to parse-- just focus on the lines that indicate success and also contain the target IP)
 
 6. "Targets/access_log-hudak" documents directory traversal attacks originating from the "/cgi-bin" directory.
    So an indicator for the exploit is a path like "/cgi-bin/../". However sometimes the ".." is encoded as
@@ -299,6 +306,9 @@
    a human readable date as follows:
 
         2022-03-10 12:51:03 type=DAEMON_ROTATE msg=audit(1646934663.008:889): op=rotate-logs auid=1000 pid=37308...
+
+10. In a previous lab we used "head" and "tail" to extract the 25th line of a file. Using the manual pages for
+    "awk" and "sed", can you figure out a way to print the 25th line of the file using each of those languages?
     
 
 "Processing"
@@ -326,7 +336,7 @@
 6. "lsof +L1" shows processing using files that have been deleted. Does running this command alert
    you to any more suspicious processes?
 
-7. Both "netstat -anptu" and "lsof -i" show you information about processes using the network.
+7. Both "netstat -peanut" and "lsof -i" show you information about processes using the network.
    But we would like to see the full path name of the executable for each process using the network.
    How can we output the full executable path names for only processes currently using the network.
 
@@ -351,19 +361,26 @@
 
 3. Set the permissions on the new ~/.sshsticky directory that the contents are only readable by your user account.
 
-4. The objective of many exploits is to create a set-UID root copy of the shell to easily gain root privs
-   in the future. Assume our exploit has given us root access, use your root access to make a set-UID copy
-   of the /bin/bash shell in /tmp.
+4. Search for all set-UID and set-GID files in your operating system.
 
-5. Search for all set-UID and set-GID files in your operating system.
-
-6. You'll notice that the normal set-UID files on the system all live in directories with names like
+5. You'll notice that the normal set-UID files on the system all live in directories with names like
    "bin", "sbin", and "libexec". Filter out those usual directories to help you spot set-UID programs
    in suspicious locations.
 
-7. As a regular user, execute your set-UID root /tmp/bash program. Are you now root? Why not?
+6. Executables installed in directories with "unsafe" ownerships and permissions can often lead to
+   privilege escalations. Find all executables installed in directories that are not owned by the root user.
+   Find all executables that are install in group or world writable directories.
+
+7. The objective of many exploits is to create a set-UID root copy of the shell to easily gain root privs
+   in the future. Assume our exploit has given us root access, use your root access to make a set-UID copy
+   of the /bin/bash shell in /tmp.
+
+8. As a regular user, execute your set-UID root /tmp/bash program. Are you now root? Why not?
    How can you get root access using /tmp/bash?
 
+9. For all users in /etc/passwd, output their username plus the names of all groups they belong to.
+   This includes not only the default group they are assigned in /etc/passwd, but also all groups they
+   have been added to in /etc/group.
 
 
 Extreme Bonus Challenges:
@@ -391,3 +408,23 @@ Extreme Bonus Challenges:
 
 5. Re-execute "Targets/make-suspicious.sh". Using "ps", "netstat", "lsof", and "/proc/*/fd", can you
    figure out what data the processes are transferring and how the processes are communicating with each other?
+
+6. How would you locate all files on a system that were modified after a specific date and time?
+
+7. Attackers will sometimes try to hide files in directories whose name starts with a ".". But "." directories
+   are common in user home directories and this leads to a lot of false-positives. Find all directories on the
+   system whose name starts with a "." but which are not in a user's home directory.
+
+8. Find all files in the file system that have the "immutable" attribute set.
+
+9. Find all duplicate files under /usr/share. Output each group of duplicate files separated by a "=====" marker.
+
+10. Find all pure ASCII text files under /usr/share.
+
+11. In a previous challenge we extracted the ASCII strings from Targets/hudak-unalloc.gz. Write a command line
+    to extract both the ASCII and Unicode strings from this file at the same time without having to read the
+    input file twice. After all, the file might be huge and you wouldn't want to waste investigator time reading
+    the file more than once. Output the strings to separate files.
+
+12. Extract strings from the memory space of a running process.
+

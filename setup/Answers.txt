@@ -206,6 +206,18 @@
     This tells "sort" to output unique lines using the content from field #2 to the end of the line,
     effectively ignoring the first column.
 
+12. There are five fields on each line but we are really only interested in the names in fields two and four.
+    However, we want to output the fields with newlines between them and not just spaces. We can do this
+    in "awk" with a little new syntax:
+
+        awk '{print $2"\n"$4}' Targets/names | sort -u >namelist
+
+    We are printing fields 2 and 4 with a newline character ("\n") in the middle. "awk" adds a newline after
+    field 4 automatically because that's the ned of line.
+
+    Once we have the names output one per line, all we have to do is to pipe that into "sort -u" to get an
+    alphabetically sorted list of the unique names.
+
 
 "Redirect This!"
 (Lab for Section 4, "Output Redirection")
@@ -341,7 +353,7 @@
         cat Targets/names | while read rank male count female count; do
 	    echo $male
 	    echo $female
-	done | sort >namelist
+	done | sort -u >namelist
 
    The loop just outputs the names in the order they appear in the file. After the loop we throw in a "sort"
    to alphabetize the list before saving it to a file with output redirection.
@@ -359,6 +371,17 @@
    to output the number followed by a tab, but no newline. We wait until the inner loop outputs each line
    of our multiplication table and then use that trailing "echo" command to output the newline and start again.
 
+6. You can spend a lot of time figuring out how to parse the YYYYMMDD file extensions on each file. But the
+   easiest solution is just a couple of nested loops:
+
+   	cd ~/Exercises/Targets/logs
+        for y in {2018..2022}; do
+	    for m in {01..12}; do
+	        mkdir -p ~/newdir/$y/$m
+		mv *.$y$m* ~/newdir/$y/$m
+            done
+	done
+	
 
 "Choose Your Own Adventure"
 (Lab for Section 6, "Conditionals")
@@ -429,7 +452,13 @@
 	9b114325e783b3b25f1918ca7b813bd4  /tmp/.ICEd-unix/.src.sh
 	9b114325e783b3b25f1918ca7b813bd4  /dev/shm/.. /.install/ewrBPFx.sh
 
-4. This is a rare case where we actually want to run "wc -c" on each individual file, so we use
+4. If you read the "find" manual page you might notice the "-maxdepth" operator:
+
+        find . -maxdepth 1 -type d
+
+   With "-maxdepth 1" we only look at the current directory and output all subdirectories we find ("-type d").
+
+5. This is a rare case where we actually want to run "wc -c" on each individual file, so we use
    "find ... -exec" rather than "find ... | xargs":
    
         # find /var/log -type f -exec wc -c {} \; | sort -nr | head -20
@@ -442,7 +471,17 @@
         635334 /var/log/anaconda/packaging.log
         601928 /var/log/dnf.log
 
-5. First let's get a list of all of the directories under /dev:
+   One thing we didn't discuss in class, however, is the "-printf" operator. Check this out:
+
+        find /var/log -type f -printf "%s\t%p\n" | sort -nr | head -20
+
+   With "-printf" you can output a wide variety of different information about each file. Here we are using the
+   file size in bytes ("%s") and the file name ("%p") output with a tab ("\t") and a newline ("\n"). See the
+   manual page for many other parameters that you can output. The "-printf" version is MUCH faster than the
+   "-exec wc -c" version because we don't have to run a command to get the size of each file-- "find" just reads
+   the info from the file's metadata (inode) just like "ls" does.
+
+6. First let's get a list of all of the directories under /dev:
 
         # cd /dev
         # find * -type d >/tmp/dirlist
@@ -516,6 +555,17 @@
 	/usr/share/nmap/nselib/data/psexec
 
    Your exact output may vary depending on the packages installed on your system.
+
+   But if you want to go the (almost) pure "find" route:
+
+        find /usr/share -regextype egrep -regex '.*\.lua$' -printf "%h\n" | sort -u
+
+   I'm combining the "-regex" operator we saw in the previous exercise with the "-printf" action we talked
+   about in an earlier solution. Here "%h" is the dirname of the file-- very convenient of "find" to have
+   an option to output this.
+
+   The only problem is we're going to get the directory name multiple times if there are multiple ".lua" files
+   in a directory. So the final "sort -u" just gives us the unique directory paths, just like in my "grep" version.
 
 3. "[A-Z][a-z][a-z] +[0-9]+ +[0-9]+:[0-9]+:[0-9]+"
 
@@ -604,20 +654,18 @@
 	rtt min/avg/max/mdev = 0.634/0.634/0.634/0.000 ms
 
    "-c 1" says send a single packet, and "-w 1" means wait at most one second for a response. If we see
-   "1 received" on line five of the output then I want to output the IP address from line one.
+   the "64 bytes from ..." line, then the "ping" was a success. So we key in on that line:
 
-   This is where "tr" comes into play:
-
-        $ ping -c 1 -w 1 192.168.10.135 | tr \\n ' ' | awk '/1 received/ {print $2}'
+        $ ping -c 1 -w 1 192.168.10.135 | grep 'bytes from' | sed -E 's/.* bytes from ([^:]*):.*/\1/'
         192.168.10.135
 
-   "tr" converts the whole output to a single line and now we can use "awk" to output the IP address if
-   we get a response.
+   We match the IP address with "[^:]*" (all the non-colon characters after the "bytes from" text) and
+   replace the line with just the IP address.
 
    Pinging out an entire network just means wrapping the whole thing up in a loop:
 
         $ for o in {1..254}; do
-	      ping -c 1 -w 1 192.168.10.$o | tr \\n ' ' | awk '/1 received/ {print $2}'
+	      ping -c 1 -w 1 192.168.10.$o | grep 'bytes from' | sed -E 's/.* bytes from ([^:]*):.*/\1/'
 	  done
         192.168.10.2
 	192.168.10.132
@@ -687,6 +735,24 @@
 	    echo $date $line
 	done
 
+10. "awk" tracks the current line number in the variable "NR" ("Number of this Record"). So in "awk" we can do:
+
+        awk 'NR == 25' input.txt
+
+     Here we're taking advantage of the fact that the default action is "print the matching line" ("{print $0}").
+
+     "sed" allows you to prefix a command with either a line number or a range of line numbers. The simplest
+     example of this is the answer to our challenge:
+
+        sed -n 25p input.txt
+
+     The "-n" option means to not print every line. "25p" means only print line 25. If you want to print a range
+     of lines, then use a comma:
+
+        sed -n 25,27p input.txt
+
+     That would print lines 25-27.
+     
 
 "Processing"
 (Lab for Section 10, "Processes")
@@ -904,17 +970,10 @@
 
         chmod -R g-rwx,o-rwx ~/.sshsticky
 
-4. Your commands will probably look something like this:
-
-        # cp /bin/bash /tmp/bash
-	# chmod u+s /tmp/bash
-	# ls -l /tmp/bash
-	-rwsr-xr-x. 1 root root 1150672 May  1 12:42 /tmp/bash
-
-5. "find / -type f -perm /u+s,g+s"
+4. "find / -type f -perm /u+s,g+s"
    "-type f" is helpful here so you don't list directories that happen to have set-GID set
 
-6. We can use egrep to filter out the normal directories:
+5. We can use egrep to filter out the normal directories:
 
         # find / -type f -perm /u+s,g+s | egrep -v '/(s?bin|libexec)/'
 	/usr/lib/polkit-1/polkit-agent-helper-1
@@ -922,7 +981,32 @@
 
    Turns out the "polkit" file is normal. But that and our /tmp/bash program really stand out now.
 
-7. If you execute a set-UID root shell you should end up as root right? Er, not so much...
+6. The trick to solving these sorts of problems is to reverse your thinking about the question.
+   We can find all executables in a single directory with a command like:
+
+        find . -maxdepth 1 -type f -perm /111
+
+   So if we want to find executables in a directory that is not owned by the root user we can:
+
+        find / -type d ! -user root -exec find {} -maxdepth 1 -type f -perm /111 \;
+
+   First locate the non-root owned directories, then "-exec" our "find" command on each directory to
+   dump out the executables.
+
+   Doing this for group or world writable directories is similar:
+
+        find / -type d -perm /022 -exec find {} -maxdepth 1 -type f -perm /111 \;
+
+   This is a useful idiom for any question that asks you "find files of type XXX in directories with condition YYY".
+
+7. Your commands will probably look something like this:
+
+        # cp /bin/bash /tmp/bash
+	# chmod u+s /tmp/bash
+	# ls -l /tmp/bash
+	-rwsr-xr-x. 1 root root 1150672 May  1 12:42 /tmp/bash
+
+8. If you execute a set-UID root shell you should end up as root right? Er, not so much...
 
         [lab@LAB ~]$ id
 	uid=1000(lab) gid=1000(lab) groups=1000(lab),10(wheel) context=...
@@ -950,6 +1034,42 @@
    After running "/tmp/bash -p" I can list root's home directory and the "id" command shows my "effective UID"
    ("euid") is root.
 
+9. Let's break the solution down into pieces. The first piece is to parse the passwd file. This is relatively
+   straightforward:
+
+        IFS=:
+	while read user junk uid gid rest; do
+	    echo $user $gid
+	done <passwd
+
+   Setting "IFS" means the shell will tokenize each line for us. All we have to do is read the fields into the
+   appropriate variables.
+
+   The second part of the challenge is to convert the numeric GID from the passwd file into a group name.
+   You could do this with "grep", but I went with "awk" because I'm hard core like that:
+
+        awk -F: "\$3 == $gid {print \$1}" group
+
+   We want the "$gid" variable to be expanded by the shell, but have to be careful to backwhack the "$" signs
+   in front of the "awk" variables so that they get passed through to "awk" as is. Quoting is such a pain sometimes.
+
+   The third part of the solution is to run through the group file and look for any other groups the user might
+   have been added to:
+
+        awk -F: "\$4 ~ /(^|,)$user(,|$)/ {print \$1}" group | tr \\n ' '
+
+   The regular expression here is complicated because we want to match the exact user name and not accidentally do
+   a substring match. We may get multiple lines of output if the user belongs to several groups, and the "tr"
+   command at the end merges the output onto a single line.
+
+   Now all we have to do is put everything together:
+
+        IFS=:
+	while read user junk uid gid rest; do 
+	    echo $user $(awk -F: "\$3 == $gid {print \$1}" group) $(awk -F: "\$4 ~ /(^|,)$user(,|$)/ {print \$1}" group | tr \\n ' ')
+        done < passwd
+
+   Being able to create these sorts of ad hoc reports is why I like having Linux as my DFIR platform!
 
 
 Extreme Bonus Challenges
@@ -968,10 +1088,23 @@ Extreme Bonus Challenges
             fi
         done
 
+    We could save ourselves a bit of processing by using a neat bash trick:
+
+        cat Targets/bash_history | while read line; do
+            if [[ $line =~ ^\#[0-9]+ ]]; then
+	        time=$(date -d @${line/\#/} "+%F %T")
+            else
+                echo -e $time\\t$line
+            fi
+        done
+
+    "${var/pattern/substitute}" is a replacement operator built into bash that is similar to "sed s/pattern/replace/".
+    Here we are matching the literal "#" at the start of the line and removing it (replacing it with nothing).
+
     Note that we're using a full-blown "if ... then" inside the loop for readability. If we wanted, the inside
     of the loop could be compacted into:
 
-        [[ $line =~ ^\#[0-9]+ ]] && time=$(date -d @$(echo $line | tr -d \#) "+%F %T") || echo -e $time\\t$line
+        [[ $line =~ ^\#[0-9]+ ]] && time=$(date -d @${line//#/} "+%F %T") || echo -e $time\\t$line
 
     Sometimes it's better to write code as a series of simple steps rather than showing off how complicated
     you can make things.
@@ -1096,3 +1229,109 @@ Extreme Bonus Challenges
        5) this connects to "lsof" (actually "netcat") listening on 1337
        6) "lsof" discards the data to /dev/null
 
+6. Old school me used to do this by:
+
+        touch -t 202211252332 /tmp/myfile
+	find / -newer /tmp/myfile
+
+   First create a file using touch that has the specific mtime we want. Then use "find ... -newer ..." to
+   locate all files with newer mtimes. This is a great DFIR hack that has served me well countless times.
+
+   But turns out that the Linux "find" command has a "-newermt" option which lets you specify the timestamp
+   as part of the find command:
+
+        find / -newermt '2022-11-25 23:32:00'
+
+   Awesome!
+
+7. We know how to look for directories whose name starts with ".":
+
+        find / -type d -name .\*
+
+   But we don't want to see directories in user home directories-- usually /home/<user> and /root.
+   "find" has a "-path" operator which we can use to match and suppress the paths we do not want to see:
+
+        find / -type d -name .\* ! \( -path /root/\* -o -path /home/\*/\* \)
+
+8. Turns out there is no "find" option to look for extended attributes like immutable. Fortunately, "lsattr"
+   has a recursive ("-R") option:
+
+        lsattr -Ra / 2>/dev/null | grep '^....i'
+
+   The "-a" option here is similar to "ls"-- also list hidden files whose names start with ".".
+
+   The immutable flag is listed in the fifth position in the standard "lsattr" output. Here we're using "grep"
+   to match the flag in the correct position.
+
+9. Generally when you are trying to find duplicate files, you're going to be comparing checksums:
+
+        find /usr/share -type f -print0 | xargs -0 md5sum | sort | uniq -D -w32
+
+   The real magic here is "uniq -D -w32". "-D" means show all duplicate lines, but "-w32" means only compare
+   the first 32 characters of each line (the checksum in this case) when deciding if the lines are duplicate.
+
+   Now we have the duplicate files, but instead of outputting the checksum and the file name, the original
+   question asked us to output the file names separated by "=====" markers:
+
+        find /usr/share -type f -print0 | xargs -0 md5sum | sort | uniq -D -w32 |
+	while read hash file; do
+	    [[ $hash != $lasthash ]] && echo =====
+	    lasthash=$hash
+	    echo $file
+        done
+
+   Reading through the input in a "while" loop, we look for when the current hash is different from the
+   previous hash. This marks a boundary where we need to output our "=====" marker.
+
+10. You might be tempted to use the "file" command here. Unfortunately, "file" doesn't identify all text
+    files as "text". For example you'll get output like "JSON data" even though the JSON is also a text file.
+
+    So here's a fun solution leveraging "grep":
+
+        grep -ErL '[^[:print:][:space:]]' /usr/share
+
+    "-E" for "extended regular expressions" to use the character classes. "-r" is recursive to search the
+    entire directory. But the real magic is "-L" which means "show the file names that DO NOT match"
+    (the inverse of the "-l" operator we have used before).
+
+    So here we are matching files that contain non-printable, non-space characters. If they match then they
+    are not pure ASCII files and we DO NOT want to print them. "-L" makes sure we only see the names of the
+    pure ASCII files.
+
+11. Time to lean on some bash output redirection magic and the humble "tee" command:
+
+        zcat Targets/hudak-unalloc.gz | tee >(strings -a -el >strings.unicode) | strings -a >strings.ascii
+
+    The "tee" command takes its input and normally would write one copy to a file specified as an argument
+    while sending another copy to the standard output (like a "T joint" in a plumbing project).
+    But here instead of a file name, we use the bash ">(...)" syntax so that the output goes to the
+    command we need to extract the Unicode strings ("-el" for 16-bit little-endian Unicode like Windows
+    machines use for many string types). The copy sent to the standard output is where we grab
+    the ASCII strings from.
+
+12. Let me give the solution first and then explain what the heck is going on:
+
+	cat /proc/<pid>/maps | tr - ' ' | 
+	    while read start end junk; do 
+	        start=$((16#$start / 4096)); 
+	        dd if=/proc/<pid>/mem bs=4096 skip=$start count=$((16#$end / 4096 - $start))
+	    done 2>/dev/null | strings -a >strings.txt
+
+   /proc/<pid>/maps is a breakdown of the mapped memory regions in a given process. Each line begins with
+   the starting and ending addresses (in hex) of the mapped memory region.
+
+   Normally you would just seek() to the start address and dump the requisite number of bytes.
+   Unfortunately, there's no seek() operation built into bash. So we use "dd" instead.
+
+   We know the memory regions will be page-aligned and memory pages are 4K (4096 bytes) big. So I'm converting
+   all the addresses so that "dd" will read in 4K chunks ("bs=4096") for efficiency. Trust me, dumping one byte
+   at a time is truly painful.
+
+   So reading from /proc/<pid>/mem, "skip=$start" becomes the equivalent of seek(). We calculate how much data
+   to dump ("count=") by subtracting the start address from the end address.
+
+   Note the "2>/dev/null" at the end of the loop, to throw away all the noise from the "dd" commands. This includes
+   errors when I try to read non-readable memory regions, because I'm not bothering to pay attention to the
+   readability flag in the /proc/<pid>/maps output.
+
+   The non-error output gets thrown into "strings -a" and ... done!
