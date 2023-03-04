@@ -223,8 +223,8 @@
 (Lab for Section 8, "Regular Expressions")
 ==========================================
 
-1. Find all files under /usr/share with a .lua extension (HINT: old fossils like Hal pipe "find" into "grep",
-   but clever hackers always read the manual page)
+1. Find all files under /usr/share with a .lua extension where .lua can be in any case (".lua", ".LUA", ".Lua", etc)
+   (HINT: old fossils like Hal pipe "find" into "grep", but clever hackers always read the manual page)
 
 2. Suppose we just wanted to list the directories that contain .lua files and not all of the individual files?
    (HINT: check out the "dirname" command)
