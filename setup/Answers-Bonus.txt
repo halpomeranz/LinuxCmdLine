@@ -1,0 +1,263 @@
+Extreme Bonus Challenges
+========================
+
+1. Read the bash_history line by line. If it's a line with a timestamp, remove the leading "#" and use "date"
+   to make the human-readable timestamp. The timestamp gets stored in the variable $time. If it's a line with
+   a command, simply output $time, a tab, and the command line.
+
+        cat Targets/bash_history | while read line; do
+            if [[ $line =~ ^\#[0-9]+ ]]; then
+	        epoch=$(echo $line | tr -d \#)
+		time=$(date -d @$epoch "+%F %T")
+            else
+                echo -e $time\\t$line
+            fi
+        done
+
+    We could save ourselves a bit of processing by using a neat bash trick:
+
+        cat Targets/bash_history | while read line; do
+            if [[ $line =~ ^\#[0-9]+ ]]; then
+	        time=$(date -d @${line/\#/} "+%F %T")
+            else
+                echo -e $time\\t$line
+            fi
+        done
+
+    "${var/pattern/substitute}" is a replacement operator built into bash that is similar to "sed s/pattern/replace/".
+    Here we are matching the literal "#" at the start of the line and removing it (replacing it with nothing).
+
+    Note that we're using a full-blown "if ... then" inside the loop for readability. If we wanted, the inside
+    of the loop could be compacted into:
+
+        [[ $line =~ ^\#[0-9]+ ]] && time=$(date -d @${line//#/} "+%F %T") || echo -e $time\\t$line
+
+    Sometimes it's better to write code as a series of simple steps rather than showing off how complicated
+    you can make things.
+
+2. This one is challenging because it employs two nested loops that require different "IFS=" values for splitting
+   their inputs. The outer loop is processing the CSV file and needs "IFS=,". But the inner loop is munching
+   through the space-separated list of recipients. The trick is to run the inner loop in a sub shell so that it
+   can have its own IFS value without interfering with the outer loop:
+
+        IFS=,; cat Targets/maillog-oneline.csv | while read time sender recips subject attachment; do
+	    (IFS=' '; for r in $recips; do
+	             echo -e $time\\t$r\\t$subject\\t$attachment
+	    done)
+        done | sort -k2,2 -k1,1
+
+3. To make the output formatting look as much like "ps" as possible, we're using the "printf" operator.
+   One cool feature of bash's "printf" is that it can do date formatting, so we don't need to call out
+   to an extra "date" command.
+
+        epoch=$(date +%s)
+	ps -eww -o etimes,user,pid,ppid,command --no-headers |
+            while read time user pid ppid command; do
+                printf "%(%F %T)T  %-8s %8d %8d %s\n" $(( $epoch - $time )) $user $pid $ppid "$command"
+            done
+
+   Get the current date in Unix epoch seconds before the loop. Then read each line of "ps" output,
+   splitting out the individual fields. The start time of each process is the current $epoch time
+   minus the elapsed etimes seconds from "ps". The other fields we leave alone.
+
+4. Let's take a look at the output from the "file" command. Note that the content of the Pictures
+   directory is randomly generated, so yours might not match exactly.
+
+        $ file Targets/Pictures/* | head
+	[...]
+	Targets/Pictures/004.png:  PNG image data, ...
+	Targets/Pictures/005.jpg:  JPEG image data, ...
+	Targets/Pictures/006.gif:  GIF image data, ...
+	[...]
+
+   Conveniently, the "file" command puts the file type keyword first. By making clever choices for
+   "IFS=" we can auto-split the base file name, the extension, and the file type from "file" into
+   individual fields. To match against the file type, uppercase the extension and change the "JPG"s
+   into "JPEG"s. If there's a mismatch, output file, extension, and type.
+
+        $ IFS='.: '; file Targets/Pictures/* | while read file ext type junk; do
+	      match=$(echo $ext | tr a-z A-Z)
+	      [[ $match == "JPG" ]] && match='JPEG'
+	      [[ $match != $type ]] && echo $file.$ext: $type
+          done
+        Targets/Pictures/025.png: JPEG
+	Targets/Pictures/031.png: ASCII
+	Targets/Pictures/047.jpeg: PNG
+	Targets/Pictures/051.jpg: GIF
+	[...]
+
+5. Let's start with the "lsof +L1" data we saw earlier:
+
+        # lsof -w +L1 | fgrep /dev/shm/.rk 
+	lsof      8600            lab  txt    REG   0,22   439136     0    88567 /dev/shm/.rk/lsof (deleted)
+	xterm     8606            lab  txt    REG   0,22    38528     0    89682 /dev/shm/.rk/xterm (deleted)
+	xterm     8606            lab    0r  FIFO   0,22      0t0     0    89681 /dev/shm/.rk/data (deleted)
+	tail      8607            lab    1w  FIFO   0,22      0t0     0    89681 /dev/shm/.rk/data (deleted)
+
+   Looking closely at the fourth column, which is the file descriptor type, the /dev/shm/.rk/data file
+   is associated with file descriptor zero-- aka STDIN-- of the "xterm" process, and file descriptor one
+   (STDOUT) of the tail process. The "data" file itself is a "FIFO", which is basically a pipe in the form
+   of a special file on disk. So it appears that "tail" is feeding data to the "xterm" process through the
+   "data" pipe.
+
+   So where is "tail" getting the data from? How about just checking the command line of the process?
+
+        # cat /proc/8607/cmdline | tr \\000 ' '; echo
+        tail -f /var/log/wtmp
+
+   OK, "tail" is reading /var/log/wtmp (a log of who is logging into the machine) and feeding the data
+   to "xterm" through the "data" FIFO.
+
+   What does "xterm" do with the data? Let's check the file descriptors for the "xterm" process:
+
+        [root@LAB lab]# ls -l /proc/8606/fd
+	total 0
+	lr-x------. 1 lab lab 64 May  1 22:12 0 -> '/dev/shm/.rk/data (deleted)'
+	lrwx------. 1 lab lab 64 May  1 22:12 1 -> 'socket:[90160]'
+	l-wx------. 1 lab lab 64 May  1 22:12 2 -> /dev/null
+
+   Hmmm, STDOUT is a socket having socket number 90160. What can we do with that? "netstat" normally doesn't
+   display socket numbers, but the "-e" option adds this info to the normal output:
+
+        # netstat -antupe | grep 90160
+        tcp        1      0 192.168.10.136:51640    192.168.10.136:1337   CLOSE_WAIT  1000     90160    8606/xterm
+
+   So socket 90160 is a connection to port 1337 on our local IP addess (in the real world this would probably
+   be a connection to some other host, but we only have the one lab machine to play with at the moment).
+   What's listening on port 1337?
+
+        # netstat -antupe | grep 1337
+        tcp        1      0 192.168.10.136:51640    192.168.10.136:1337   CLOSE_WAIT  1000     90160    8606/xterm
+
+	tcp        0      0 192.168.10.136:1337     192.168.10.136:51640  FIN_WAIT2   1000     87777    8600/lsof
+
+   As you may have guessed, the "xterm" process is communicating with our final suspicious process, "lsof"
+   over the network.
+
+   And what's "lsof" doing with the data? Let's check the file descriptors for this process:
+
+        [root@LAB lab]# ls -l /proc/8600/fd
+	total 0
+	lr-x------. 1 lab lab 64 May  1 22:12 0 -> /dev/null
+	l-wx------. 1 lab lab 64 May  1 22:12 1 -> /dev/null
+	l-wx------. 1 lab lab 64 May  1 22:12 2 -> /dev/null
+	lrwx------. 1 lab lab 64 May  1 22:12 5 -> 'socket:[87777]'
+
+   Sadly, "lsof" is just discarding the data into "/dev/null". Hey, I had to do something with the data to
+   make the scenario run, but there didn't seem to be much point in actually saving it.
+
+   So to recap:
+
+       1) tail reads from /var/log/wtmp
+       2) tail writes the info into the "data" FIFO
+       3) "xterm" (actually the "cat" program) reads from the "data" FIFO
+       4) "xterm" writes data to the local machine on port 1337 (accomplished via ">/dev/tcp/.../1337")
+       5) this connects to "lsof" (actually "netcat") listening on 1337
+       6) "lsof" discards the data to /dev/null
+
+6. Old school me used to do this by:
+
+        touch -t 202211252332 /tmp/myfile
+	find / -newer /tmp/myfile
+
+   First create a file using touch that has the specific mtime we want. Then use "find ... -newer ..." to
+   locate all files with newer mtimes. This is a great DFIR hack that has served me well countless times.
+
+   But turns out that the Linux "find" command has a "-newermt" option which lets you specify the timestamp
+   as part of the find command:
+
+        find / -newermt '2022-11-25 23:32:00'
+
+   Awesome!
+
+7. We know how to look for directories whose name starts with ".":
+
+        find / -type d -name .\*
+
+   But we don't want to see directories in user home directories-- usually /home/<user> and /root.
+   "find" has a "-path" operator which we can use to match and suppress the paths we do not want to see:
+
+        find / -type d -name .\* ! \( -path /root/\* -o -path /home/\*/\* \)
+
+8. Turns out there is no "find" option to look for extended attributes like immutable. Fortunately, "lsattr"
+   has a recursive ("-R") option:
+
+        lsattr -Ra / 2>/dev/null | grep '^....i'
+
+   The "-a" option here is similar to "ls"-- also list hidden files whose names start with ".".
+
+   The immutable flag is listed in the fifth position in the standard "lsattr" output. Here we're using "grep"
+   to match the flag in the correct position.
+
+9. Generally when you are trying to find duplicate files, you're going to be comparing checksums:
+
+        find /usr/share -type f -print0 | xargs -0 md5sum | sort | uniq -D -w32
+
+   The real magic here is "uniq -D -w32". "-D" means show all duplicate lines, but "-w32" means only compare
+   the first 32 characters of each line (the checksum in this case) when deciding if the lines are duplicate.
+
+   Now we have the duplicate files, but instead of outputting the checksum and the file name, the original
+   question asked us to output the file names separated by "=====" markers:
+
+        find /usr/share -type f -print0 | xargs -0 md5sum | sort | uniq -D -w32 |
+	while read hash file; do
+	    [[ $hash != $lasthash ]] && echo =====
+	    lasthash=$hash
+	    echo $file
+        done
+
+   Reading through the input in a "while" loop, we look for when the current hash is different from the
+   previous hash. This marks a boundary where we need to output our "=====" marker.
+
+10. You might be tempted to use the "file" command here. Unfortunately, "file" doesn't identify all text
+    files as "text". For example you'll get output like "JSON data" even though the JSON is also a text file.
+
+    So here's a fun solution leveraging "grep":
+
+        grep -ErL '[^[:print:][:space:]]' /usr/share
+
+    "-E" for "extended regular expressions" to use the character classes. "-r" is recursive to search the
+    entire directory. But the real magic is "-L" which means "show the file names that DO NOT match"
+    (the inverse of the "-l" operator we have used before).
+
+    So here we are matching files that contain non-printable, non-space characters. If they match then they
+    are not pure ASCII files and we DO NOT want to print them. "-L" makes sure we only see the names of the
+    pure ASCII files.
+
+11. Time to lean on some bash output redirection magic and the humble "tee" command:
+
+        zcat Targets/hudak-unalloc.gz | tee >(strings -a -el >strings.unicode) | strings -a >strings.ascii
+
+    The "tee" command takes its input and normally would write one copy to a file specified as an argument
+    while sending another copy to the standard output (like a "T joint" in a plumbing project).
+    But here instead of a file name, we use the bash ">(...)" syntax so that the output goes to the
+    command we need to extract the Unicode strings ("-el" for 16-bit little-endian Unicode like Windows
+    machines use for many string types). The copy sent to the standard output is where we grab
+    the ASCII strings from.
+
+12. Let me give the solution first and then explain what the heck is going on:
+
+	cat /proc/<pid>/maps | tr - ' ' | 
+	    while read start end junk; do 
+	        start=$((16#$start / 4096)); 
+	        dd if=/proc/<pid>/mem bs=4096 skip=$start count=$((16#$end / 4096 - $start))
+	    done 2>/dev/null | strings -a >strings.txt
+
+   /proc/<pid>/maps is a breakdown of the mapped memory regions in a given process. Each line begins with
+   the starting and ending addresses (in hex) of the mapped memory region.
+
+   Normally you would just seek() to the start address and dump the requisite number of bytes.
+   Unfortunately, there's no seek() operation built into bash. So we use "dd" instead.
+
+   We know the memory regions will be page-aligned and memory pages are 4K (4096 bytes) big. So I'm converting
+   all the addresses so that "dd" will read in 4K chunks ("bs=4096") for efficiency. Trust me, dumping one byte
+   at a time is truly painful.
+
+   So reading from /proc/<pid>/mem, "skip=$start" becomes the equivalent of seek(). We calculate how much data
+   to dump ("count=") by subtracting the start address from the end address.
+
+   Note the "2>/dev/null" at the end of the loop, to throw away all the noise from the "dd" commands. This includes
+   errors when I try to read non-readable memory regions, because I'm not bothering to pay attention to the
+   readability flag in the /proc/<pid>/maps output.
+
+   The non-error output gets thrown into "strings -a" and ... done!

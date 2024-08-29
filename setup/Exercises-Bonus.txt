@@ -1,0 +1,45 @@
+Extreme Bonus Challenges:
+=========================
+
+1. "Targets/bash_history" is a command history file that includes timestamps. First there is a line "#<timestamp>"
+   where <timestamp> is in "Unix epoch format"-- the number of seconds since Jan 1, 1970. The timestamp line is
+   followed by the actual command on a line by itself. These pairs of lines are repeated throughout the file.
+   The command "date -d @<timestamp>" will convert epoch times into human-readable times, and the date command
+   can produce many different output formats. Convert the raw shell history into lines that look like:
+   "YYYY-MM-DD hh:mm:ss<tab>command-line".
+
+2. Change the format of "Targets/maillog-oneline.csv" to output one line per recipient with the following fields
+   timestamp, recipient, subject, attachment. Sort the file by recipient and then by timestamp.
+   
+3. Output a process listing with the following fields: start time, user, PID, PPID, command line.
+   "start time" must be in the format "yyyy-mm-dd hh:mm:ss" (HINT: "ps -o etimes" displays the number
+   of seconds that have elapsed since the process start, 'date "+%s"' gives the current time in
+   seconds since the start of the Unix epoch)
+
+4. Malware sometimes likes to hide in files with incorrect extensions-- like a *.gif" file that is
+   actually an executable.  "Targets/Pictures" contains hundreds of files with extensions like .png,
+   .gif, and .jpg. But not all of the files actually match their extensions. Using the "file" command,
+   output the files which do not match their extensions.
+
+5. Re-execute "Targets/make-suspicious.sh". Using "ps", "netstat", "lsof", and "/proc/*/fd", can you
+   figure out what data the processes are transferring and how the processes are communicating with each other?
+
+6. How would you locate all files on a system that were modified after a specific date and time?
+
+7. Attackers will sometimes try to hide files in directories whose name starts with a ".". But "." directories
+   are common in user home directories and this leads to a lot of false-positives. Find all directories on the
+   system whose name starts with a "." but which are not in a user's home directory.
+
+8. Find all files in the file system that have the "immutable" attribute set.
+
+9. Find all duplicate files under /usr/share. Output each group of duplicate files separated by a "=====" marker.
+
+10. Find all pure ASCII text files under /usr/share.
+
+11. In a previous challenge we extracted the ASCII strings from Targets/hudak-unalloc.gz. Write a command line
+    to extract both the ASCII and Unicode strings from this file at the same time without having to read the
+    input file twice. After all, the file might be huge and you wouldn't want to waste investigator time reading
+    the file more than once. Output the strings to separate files.
+
+12. Extract strings from the memory space of a running process.
+

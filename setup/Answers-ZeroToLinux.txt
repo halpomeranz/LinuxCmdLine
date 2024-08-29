@@ -1,0 +1,219 @@
+"Directory Jeopardy!"
+(Lab for Section 1, "Getting Around")
+=====================================
+
+1.    cp /etc/passwd /tmp             # use full absolute paths, works from anywhere
+      cd /etc; cp passwd /tmp         # use relative path from /etc, absolute path to /tmp
+      cd /etc; cp passwd ../tmp       # both paths relative from /etc
+      cd /tmp; cp /etc/passwd .       # go to /tmp, cp absolute path to current directory
+      cd /tmp; cp ../etc/passwd .     # use relative paths from /tmp
+      cd /; cp etc/passwd tmp         # use relative paths from the root
+
+2. You would be in "/", the root of the file system. All of the "/.."s at the end of the
+   command are going to guarantee that.
+
+3. You should be in "/home". Everything before the second-to-last command, "cd", is really
+   irrelevant since that command brings you to your home directory wherever you are.
+   "cd .." from there should take you to "/home".
+
+4. "cd /v<Tab>r<Tab>N<Tab>s<Tab><Return>" -- 13 keystrokes by my count! Typing out every letter
+   in the full command is 47 keystrokes and you'd probably make a typo somewhere along the way!
+
+5. "We the people in order to form a more perfect union is the beginning of the preamble of the
+    United States Constitution which is stored in the National Archives in Washington DC"
+
+
+
+"Only Seven Commands? No Worries!"
+(Lab for Section 2, "Basic Commands")
+=====================================
+
+1. Answers will vary depending on your system, but here's how to find the answers:
+
+      Sort files by their modification date with "ls -lAt /var/log", then pick the newest and the oldest
+          from the bottom/top of the listing
+      Sort the directory by size with "ls -lAS /var/log"-- this will give you the sizes in bytes for the
+          smallest and biggest files. "ls -lASh /var/log" will show you file sizes in megabytes, gigabytes, etc.
+
+2. The command is "mkdir"
+
+3. "mkdir -p /tmp/fee/fie/fo/fum" -- the trick is the "-p" option that lets you create directories
+   as deeply as you want to
+
+4. There are many different ways to accomplish this-- here's one method:
+
+       cd ~/Exercises/Targets/Pictures
+       mkdir ~/Pictures/GIF
+       cp *.gif ~/Pictures/GIF
+       mkdir ~/Pictures/JPG
+       cp *.jpg *.jpeg ~/Pictures/JPG
+       mdir ~/Pictures/PNG
+       cp *.png ~/Pictures/PNG
+
+5. If you search backwards, you will probably encounter the commands in this order:
+
+       echo help! i need somebody!
+       echo Helping helps the helper and the helpee
+       echo Look for the helpers. You will always find people helping.
+
+6. The commands are:
+
+       echo I am only here because I had a lot of help along the way
+       echo I get by with a little help from my friends
+       echo Some days it's filet mignon and other days it's hamburger helper
+
+7. Run "less ~/.bash_history". Once the file is open, type "/help" to search forward through the file
+   for the word "help".
+   
+
+"Learning to Linux"
+(Lab for Section 3, "Building Blocks")
+======================================
+
+1. "grep -rl sockaddr_in /usr/include" -- the exact list of files output may vary depending on which Linux
+   distro you are using, what packages you have installed, etc.
+
+2. "grep -rl sockaddr_in /usr/include | wc -l" -- again the exact count of files may vary for each student
+
+3. The "Targets/Pictures" directory is randomly generated so your numbers may not match exactly:
+
+        $ ls Targets/Pictures/ | wc -l
+        988
+
+4. The "Targets/Pictures" directory is randomly generated so your numbers may not match exactly:
+
+        $ ls Targets/Pictures/ | cut -d. -f2 | sort | uniq -c
+            213 gif
+            103 jpeg
+            207 jpg
+            465 png
+        $ ls ~/Pictures/GIF | wc -l
+        213
+        $ ls ~/Pictures/JPG | wc -l
+        310
+        $ ls ~/Pictures/PNG | wc -l
+        465
+
+5. A natural approach would be something like this:
+
+        $ md5sum Targets/Pictures/* | awk '{print $1}' | sort -u
+        854fba5778d3454b7c631be00dacbf93
+        88918a6753e0b70cea00db875e219195
+        f0a372b4bb014f41dd60fd5c2158000f
+        f8158fbfba9a0e0d525a8365380149f9
+
+   Yes, there are really only four different files that make up the hundreds of files in the directory.
+
+   One cool feature of "sort", however, is that the "-u" option understands making things unique based
+   on one or more individual fields on the line (which is something you can't do with "uniq"). So this
+   approach also works:
+
+        $ md5sum Targets/Pictures/* | sort -u -k1,1
+        854fba5778d3454b7c631be00dacbf93  Targets/Pictures/002.jpg
+        88918a6753e0b70cea00db875e219195  Targets/Pictures/031.png
+        f0a372b4bb014f41dd60fd5c2158000f  Targets/Pictures/006.gif
+        f8158fbfba9a0e0d525a8365380149f9  Targets/Pictures/000.png
+
+   The bonus to this approach is that you get the name of a sample file to look at for each checksum.
+
+6. Your numbers are likely to vary, even if you are using the same Linux distro as I am:
+
+        $ ps -ef | awk '{print $1}' | sort | uniq -c | sort -nr
+            240 root
+             71 lab
+              2 avahi
+              1 UID
+              1 rtkit
+              1 rpc
+              1 polkitd
+              1 libstor+
+              1 dnsmasq
+              1 dbus
+              1 colord
+              1 chrony
+
+7. The solution I showed in class was to use "tail -n +2" to skip over the initial header line:
+
+        $ ps -ef | tail -n +2 | awk '{print $1}' | sort | uniq -c | sort -nr
+            240 root
+             72 lab
+              2 avahi
+              1 rtkit
+              1 rpc
+              1 polkitd
+              1 libstor+
+              1 dnsmasq
+              1 dbus
+              1 colord
+              1 chrony
+
+   Or you could check out the manual page for "ps". It turns out that the Linux "ps" command has a
+   "--no-header" option which we could use instead:
+
+        $ ps -ef --no-header | awk '{print $1}' | sort | uniq -c | sort -nr
+            240 root
+             72 lab
+              2 avahi
+              1 rtkit
+              1 rpc
+              1 polkitd
+              1 libstor+
+              1 dnsmasq
+              1 dbus
+              1 colord
+              1 chrony
+
+8. The problem with "sort -n" is that it treats the first two octets like a decimal number. This leads
+   to an incorrect sorting.
+
+   The traditional method has been to treat each octet as a field to be sorted numerically:
+
+        sort -n -t. -k1,1 -k2,2 -k3,3 -k4,4 Targets/ip_addrs
+
+   This approach should work on pretty much any flavor of Unix or Linux you find yourself on.
+   
+   However the Linux "sort" command has added a "-V" (aka "--version-sort") option which accomplishes the
+   same output:
+
+        sort -V Targets/ip_addrs
+
+9. Use "head" to extract the first 25 lines, then "tail" to output only the final line:
+
+        $ head -25 Targets/numbered_lines | tail -1
+        this is line 25
+
+   You can extract any line you want from the file, just by changing the initial argument to "head".
+
+10. Use awk's pattern matching to only match lines that contain "curl/". The trick here is that we have to
+    write that as "/curl\//" in the pattern match so that our trailing "/" doesn't mess things up.
+    The rest is the "... | sort | uniq -c | sort -nr" idiom I used in the slides to create a histogram.
+    
+        $ awk '/curl\// {print $1}' Targets/access_log-hudak | sort | uniq -c | sort -nr
+             80 116.202.187.77
+             72 45.33.65.249
+             24 113.98.117.244
+             23 185.247.225.61
+             22 116.22.197.111
+             21 193.32.127.156
+             14 5.183.209.217
+             12 176.10.99.200
+              8 85.132.252.37
+              5 64.233.202.242
+            [...]
+
+
+11. The answer is actually a simple command:  "sort -u -k2 Targets/psscan-output"
+    This tells "sort" to output unique lines using the content from field #2 to the end of the line,
+    effectively ignoring the first column.
+
+12. There are five fields on each line but we are really only interested in the names in fields two and four.
+    However, we want to output the fields with newlines between them and not just spaces. We can do this
+    in "awk" with a little new syntax:
+
+        awk '{print $2"\n"$4}' Targets/names | sort -u >namelist
+
+    We are printing fields 2 and 4 with a newline character ("\n") in the middle. "awk" adds a newline after
+    field 4 automatically because that's the ned of line.
+
+    Once we have the names output one per line, all we have to do is to pipe that into "sort -u" to get an
+    alphabetically sorted list of the unique names.

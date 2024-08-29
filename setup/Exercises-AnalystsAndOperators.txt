@@ -1,60 +1,5 @@
-"Directory Jeopardy!"
-(Lab for Section 1, "Getting Around")
-=====================================
-
-1. How many ways can you think of to make a copy of /etc/passwd in /tmp?
-
-2. What directory would you be in after you ran the following command:
-   "cd ~/Pictures/.././.././../etc/systemd/../../var/log/.././../../../../../.."
-
-3. What directory are you in after the following commands:
-
-   	cd ~/Downloads
-	cd ../../../etc/pam.d
-	cd /tmp
-	cd ../../../var/log
-	cd
-	cd ..
-
-4. How few keystrokes can you use to "cd /var/run/NetworkManager/system-connections/"?
-
-5. Use the "cd" command to descend as far as possible under "Targets/PtP" in order to discover
-   the full text of the "phrase that pays".
-	
-
-
-"Only Seven Commands? No Worries!"
-(Lab for Section 2, "Basic Commands")
-=====================================
-
-1. Under /var/log:
-
-      What is the most recently modified file?
-      What file is least recently modified (oldest) file?
-      What is the file size of the smallest file?
-      How many bytes are in the largest file?
-      How many megabytes is the largest file?
-
-2. What is the command to make directories? (HINT: Try "man -k")
-
-3. You want to make a directory called "/tmp/fee/fie/fo/fum"-- how can you do this with a
-   single command? (HINT: get some experience reading Linux manual pages)
-
-4. The directory "Targets/Pictures" contains files with .gif, .jpg, .jpeg, and .png extensions.
-   Make three directories under ~/Pictures for GIF, JPG, and PNG files and then copy the files
-   from "Targets/Pictures" into their appropriate destinations. Note that both the .jpg and .jpeg
-   files should end up in ~/Pictures/JPG!
-
-5. Search through your command line history for three commands containing the letters "help".
-   What are they?
-
-6. Now become the root user and search root's command history for "help" commands. What are they?
-
-7. Can you find the same commands in your history using string searching in less?
-
-
 "Learning to Linux"
-(Lab for Section 3, "Building Blocks")
+(Lab for Section 1, "Building Blocks")
 ======================================
 
 1. List all file names under /usr/include that contain the string "sockaddr_in".
@@ -111,7 +56,7 @@
 
 
 "Redirect This!"
-(Lab for Section 4, "Output Redirection")
+(Lab for Section 2, "Output Redirection")
 =========================================
 
 1. Output a random IP address.
@@ -133,7 +78,7 @@
 
 
 "Get in the Loop"
-(Lab for Section 5, "Loops")
+(Lab for Section 3, "Loops")
 ============================
 
 1. Output a file containing 1000 random IP addresses that you could use for testing.
@@ -170,7 +115,7 @@
 
 
 "Choose Your Own Adventure"
-(Lab for Section 6, "Conditionals")
+(Lab for Section 4, "Conditionals")
 ===================================
 
 1. Make a coin flip simulator that outputs "heads" or "tails"
@@ -191,7 +136,7 @@
    
 
 "Find All the Things"
-(Lab for Section 7, "Other Iterators")
+(Lab for Section 5, "Other Iterators")
 ======================================
 
 1. The /dev directory contains special device files. Finding regular files under /dev may be an indication
@@ -220,7 +165,7 @@
 
 
 "Express Yourself"
-(Lab for Section 8, "Regular Expressions")
+(Lab for Section 6, "Regular Expressions")
 ==========================================
 
 1. Find all files under /usr/share with a .lua extension where .lua can be in any case (".lua", ".LUA", ".Lua", etc)
@@ -250,7 +195,7 @@
 
 
 "Transformers"
-(Lab for Section 9, "AWK/sed/tr")
+(Lab for Section 7, "AWK/sed/tr")
 =================================
 
 1. In an earlier lab we used a shell loop to output lines from "Targets/maillog-oneline.csv" when the subject and
@@ -312,7 +257,7 @@
     
 
 "Processing"
-(Lab for Section 10, "Processes")
+(Lab for Section 8, "Processes")
 =================================
 
 [Before attempting the labs in this section, run the script "Targets/make-suspicious.sh"
@@ -345,7 +290,7 @@
 
 
 "Mine, Ours, Theirs"
-(Lab for Section 11, "Users, Groups, and Perms")
+(Lab for Section 9, "Users, Groups, and Perms")
 ================================================
 
 1. "Targets/passwd" and "Targets/shadow" are hacked up versions of /etc/passwd and /etc/shadow.
@@ -381,50 +326,3 @@
 9. For all users in /etc/passwd, output their username plus the names of all groups they belong to.
    This includes not only the default group they are assigned in /etc/passwd, but also all groups they
    have been added to in /etc/group.
-
-
-Extreme Bonus Challenges:
-=========================
-
-1. "Targets/bash_history" is a command history file that includes timestamps. First there is a line "#<timestamp>"
-   where <timestamp> is in "Unix epoch format"-- the number of seconds since Jan 1, 1970. The timestamp line is
-   followed by the actual command on a line by itself. These pairs of lines are repeated throughout the file.
-   The command "date -d @<timestamp>" will convert epoch times into human-readable times, and the date command
-   can produce many different output formats. Convert the raw shell history into lines that look like:
-   "YYYY-MM-DD hh:mm:ss<tab>command-line".
-
-2. Change the format of "Targets/maillog-oneline.csv" to output one line per recipient with the following fields
-   timestamp, recipient, subject, attachment. Sort the file by recipient and then by timestamp.
-   
-3. Output a process listing with the following fields: start time, user, PID, PPID, command line.
-   "start time" must be in the format "yyyy-mm-dd hh:mm:ss" (HINT: "ps -o etimes" displays the number
-   of seconds that have elapsed since the process start, 'date "+%s"' gives the current time in
-   seconds since the start of the Unix epoch)
-
-4. Malware sometimes likes to hide in files with incorrect extensions-- like a *.gif" file that is
-   actually an executable.  "Targets/Pictures" contains hundreds of files with extensions like .png,
-   .gif, and .jpg. But not all of the files actually match their extensions. Using the "file" command,
-   output the files which do not match their extensions.
-
-5. Re-execute "Targets/make-suspicious.sh". Using "ps", "netstat", "lsof", and "/proc/*/fd", can you
-   figure out what data the processes are transferring and how the processes are communicating with each other?
-
-6. How would you locate all files on a system that were modified after a specific date and time?
-
-7. Attackers will sometimes try to hide files in directories whose name starts with a ".". But "." directories
-   are common in user home directories and this leads to a lot of false-positives. Find all directories on the
-   system whose name starts with a "." but which are not in a user's home directory.
-
-8. Find all files in the file system that have the "immutable" attribute set.
-
-9. Find all duplicate files under /usr/share. Output each group of duplicate files separated by a "=====" marker.
-
-10. Find all pure ASCII text files under /usr/share.
-
-11. In a previous challenge we extracted the ASCII strings from Targets/hudak-unalloc.gz. Write a command line
-    to extract both the ASCII and Unicode strings from this file at the same time without having to read the
-    input file twice. After all, the file might be huge and you wouldn't want to waste investigator time reading
-    the file more than once. Output the strings to separate files.
-
-12. Extract strings from the memory space of a running process.
-
