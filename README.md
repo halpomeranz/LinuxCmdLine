@@ -13,7 +13,7 @@ In addition to the PDF files which are the courseware slides, I have also includ
 1. Install Linux in a virtual machine. I recommend using a dedicated virtual machine for this because the lab setup script will plant "easter eggs" in different directories on the system. For example, it modifies the .bash_history files for users on the system and hides fake "malware" scripts for you to locate during the exercises. You can use either a local virtualization tool like VirtualBox or a cloud-based instance.
 
    * [Install Linux in VirtualBox](https://itsfoss.com/install-linux-in-virtualbox/)
-   * [Install Linux in Amazon EC2](https://jumpcloud.com/blog/how-to-set-up-amazon-linux-on-ec2-instances)
+   * [Install Linux in Amazon EC2](https://linux.how2shout.com/how-to-create-a-ubuntu-linux-aws-ec2-instance-on-amazon-cloud/)
 
 2. Log into your virtual machine and install this repo:
 
