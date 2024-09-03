@@ -10,10 +10,23 @@ In addition to the PDF files which are the courseware slides, I have also includ
 
 ## Setting Up Your Lab Environment
 
-* First install Linux in a virtual machine. I recommend using a dedicated virtual machine for this because the lab setup script will plant "easter eggs" in different directories on the system. For example, it modifies the .bash_history files for users on the system and hides fake "malware" scripts for you to locate during the exercises.
+1. Install Linux in a virtual machine. I recommend using a dedicated virtual machine for this because the lab setup script will plant "easter eggs" in different directories on the system. For example, it modifies the .bash_history files for users on the system and hides fake "malware" scripts for you to locate during the exercises. You can use either a local virtualization tool like VirtualBox or a cloud-based instance.
 
-* Download this repo to your virtual machine
+   * [Install Linux in VirtualBox](https://itsfoss.com/install-linux-in-virtualbox/)
+   * [Install Linux in Amazon EC2](https://jumpcloud.com/blog/how-to-set-up-amazon-linux-on-ec2-instances)
 
-* Run the `setup/install` script AS A REGULAR USER. Do NOT run the script as the `root` user.
+2. Log into your virtual machine and install this repo:
+
+```
+sudo apt install git
+git clone https://github.com/halpomeranz/LinuxCmdLine.git
+```
+
+3. Run the `setup/install` script AS A REGULAR USER. Do NOT run the script as the `root` user.
+
+```
+cd LinuxCmdLine
+bash setup/install
+```
 
 When you are done, you should have a directory named ~/Exercises with everything you need.
