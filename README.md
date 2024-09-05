@@ -26,7 +26,7 @@ git clone https://github.com/halpomeranz/LinuxCmdLine.git
 
 ```
 cd LinuxCmdLine
-bash setup/install
+bash setup/install.sh
 ```
 
 When you are done, you should have a directory named ~/Exercises with everything you need.
