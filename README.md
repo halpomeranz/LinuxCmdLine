@@ -15,10 +15,11 @@ In addition to the PDF files which are the courseware slides, I have also includ
    * [Install Linux in VirtualBox](https://itsfoss.com/install-linux-in-virtualbox/)
    * [Install Linux in Amazon EC2](https://linux.how2shout.com/how-to-create-a-ubuntu-linux-aws-ec2-instance-on-amazon-cloud/)
 
-2. Log into your virtual machine and install this repo:
+2. Log into your virtual machine and install this repo. You may need to install the `git` package first. Installing the  `build-essential` package ensures you have all the tools necessary for the exercises.
+
 
 ```
-sudo apt install git
+sudo apt install git build-essential
 git clone https://github.com/halpomeranz/LinuxCmdLine.git
 ```
 
